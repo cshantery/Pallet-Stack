@@ -19,7 +19,7 @@ def create_connection():
             database='icwp_db'
         )
         if connection.is_connected():
-            print("✅ Connected to MySQL version:", connection.get_server_info())
+            print(" Connected to MySQL version:", connection.get_server_info())
             return connection
     except Error as e:
         print("❌ Connection failed:", e)
@@ -100,35 +100,3 @@ def create_tables(connection):
     except Error as e:
         print("❌ Table creation failed:", e)
 
-#insert user
-def insert_user(connection, username, email, password):
-    try:
-        cursor = connection.cursor()
-        user_id = generate_id()
-        query = "INSERT INTO users (id, username, email, password) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (user_id, username, email, password))
-        connection.commit()
-        print(f"✅ User `{username}` added with ID {user_id}")
-    except Error as e:
-        print("❌ Insert failed:", e)
-
-#get users
-def get_users(connection):
-    try:
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM users")
-        rows = cursor.fetchall()
-        for row in rows:
-            print(row)
-    except Error as e:
-        print("❌ Fetch failed:", e)
-
-
-if __name__ == "__main__":
-    connected = create_connection()
-    if connected:
-        create_tables(connected)
-        insert_user(connected, "cshantery", "cshantery@email.com", "pass123")
-        print("\nAll users:")
-        get_users(connected)
-        connected.close()
