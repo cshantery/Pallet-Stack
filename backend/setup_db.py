@@ -50,7 +50,7 @@ def create_tables(connection):
             )
             """,
             """
-            CREATE TABLE IF NOT EXISTS Customer (
+            CREATE TABLE IF NOT EXISTS customer (
                 Customer_ID CHAR(6) PRIMARY KEY,
                 Customer_Name VARCHAR(25),
                 Phone VARCHAR(25),
@@ -58,7 +58,7 @@ def create_tables(connection):
             )
             """,
             """
-            CREATE TABLE IF NOT EXISTS Supplier (
+            CREATE TABLE IF NOT EXISTS supplier (
                 Supplier_ID CHAR(6) PRIMARY KEY,
                 Supplier_type VARCHAR(25),
                 Supplier_Name VARCHAR(25),
@@ -67,7 +67,7 @@ def create_tables(connection):
             )
             """,
             """
-            CREATE TABLE IF NOT EXISTS Orders (
+            CREATE TABLE IF NOT EXISTS orders (
                 Order_ID CHAR(6) PRIMARY KEY,
                 Pallet_ID CHAR(6),
                 Lumber_Price DOUBLE,
@@ -77,7 +77,7 @@ def create_tables(connection):
             )
             """,
             """
-            CREATE TABLE IF NOT EXISTS Shipments (
+            CREATE TABLE IF NOT EXISTS shipments (
                 Shipment_ID CHAR(6) PRIMARY KEY,
                 Order_ID CHAR(6),
                 Shipment_Date DATE,

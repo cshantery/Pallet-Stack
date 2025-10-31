@@ -1,7 +1,7 @@
 # will have sql query functions
 #impliment CRUD operations for specified tables
 
-from backend.db import get_db
+from backend.db import get_db_connection
 import uuid
 
 
@@ -13,11 +13,11 @@ def generate_invoice_id():
 
 #create invoice
 def insert_invoice(customer_id, order_id, order_price):
-    connection = get_db()
+    connection = get_db_connection()
     cursor = connection.cursor()
     invoice_id = generate_invoice_id()
     try:
-        query =  """ INSERT INTO invoices (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s) """
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s) """
         cursor.execute(query, (invoice_id, customer_id, order_id, order_price))
         connection.commit()
         return True
@@ -30,11 +30,11 @@ def insert_invoice(customer_id, order_id, order_price):
 
 #read operation for invoice, search by customer id invoice id or order id
 def search_invoice(invoice_id = None, order_id = None, customer_id = None):
-    connection = get_db()
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     try:
-        query = "SELECT * FROM invoices WHERE 1=1"  # 1=1 makes appending conditions easier
+        query = "SELECT * FROM invoice WHERE 1=1"  # 1=1 makes appending conditions easier
         values = []
 
         if invoice_id != None:
@@ -58,7 +58,7 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
     
 #update operation for invoice table
 def update_invoice(invoice_id, customer_id = None, order_id = None, order_price = None):
-    connection = get_db()
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     try:
@@ -82,7 +82,7 @@ def update_invoice(invoice_id, customer_id = None, order_id = None, order_price 
         
         values.append(invoice_id)
 
-        query = """UPDATE invoices SET {', '.join(updates)} WHERE Invoice_ID = %s"""
+        query = f"""UPDATE invoice SET {', '.join(updates)} WHERE Invoice_ID = %s"""
         cursor.execute(query, tuple(values))
         connection.commit()
 
@@ -99,11 +99,11 @@ def update_invoice(invoice_id, customer_id = None, order_id = None, order_price 
 
 
 def delete_invoice(invoice_id):
-    connection = get_db()
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     try:
-        query = "DELETE FROM invoices WHERE Invoice_ID = %s"
+        query = "DELETE FROM invoice WHERE Invoice_ID = %s"
         cursor.execute(query, (invoice_id,))
         connection.commit()
         
@@ -116,3 +116,51 @@ def delete_invoice(invoice_id):
         return False
     finally:
         cursor.close()
+
+
+#orders can be view by order_id, pallet_id, or customer_id
+def view_orders(order_id = None, pallet_id = None, customer_id = None):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        query = "SELECT * FROM orders WHERE 1=1"
+        values =[]
+
+        if order_id != None:
+            query += " AND Order_ID = %s"
+            values.append(order_id)
+        if pallet_id != None:
+            query += " AND Pallet_ID = %s"
+            values.append(pallet_id)
+        if customer_id != None:
+            query += " AND Customer_ID = %s"
+            values.append(customer_id)
+
+        cursor.execute(query, tuple(values))
+        results = cursor.fetchall()
+        return results
+    except Exception as e:
+        print(" Error searching orders:", e)
+        return []
+    finally:
+        cursor.close()
+
+#create order
+def insert_order(order_id, pallet_id, customer_id, lumber_price, date, quantity):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        query = """INSERT INTO orders (Order_ID, Pallet_ID, Lumber_Price, Customer_ID, Order_Date, Quantity) 
+        VALUES (%s,%s,%s,%s,%s,%s,)"""
+        cursor.execute(query, (order_id, pallet_id, customer_id, lumber_price, date, quantity))
+        connection.commit()
+        return True
+    except Exception as e:
+        print("Error creating order:", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+
