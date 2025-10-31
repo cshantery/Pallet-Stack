@@ -1,7 +1,5 @@
 import mysql.connector
 from mysql.connector import Error
-import random
-import string
 
 #connect to mysql db
 def get_db_connection():
