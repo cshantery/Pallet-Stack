@@ -164,3 +164,92 @@ def insert_order(order_id, pallet_id, customer_id, lumber_price, date, quantity)
     finally:
         cursor.close()
 
+#update operation for inventory table
+def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_count= None, price= None):
+      connection = get_db_connection()
+      cursor = connection.cursor()
+      
+      try: 
+        updates = []
+        values = []
+
+        if pallet_condition != None: 
+            updates.append("Pallet_Condition = %s")
+            values.append(pallet_condition)
+        
+        if size != None:
+            updates.append("Size = %s")
+            values.append(size)
+        
+        if inventory_count != None:
+            updates.append("Inventory_Count = %s")
+            values.append(inventory_count)
+
+        if price != None:
+            updates.append("Price = %s")
+            values.append(price)
+
+        if not updates:
+            print("No updates.")
+            return False
+
+        values.append(pallet_id)
+        query = f"""UPDATE pallets SET {', '.join(updates)} WHERE Pallet_ID = %s"""
+        cursor.execute(query, tuple(values))
+        connection.commit()
+
+        return cursor.rowcount > 0
+
+    except Exception as e:
+        print("Error updtating inventory:", e)
+        connection.rollback()
+        return False
+    finally: 
+        cursor.close()
+
+#Update orders table
+def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= None, order_date= None, quantity= None ):
+connection = get_db_connection()
+cursor = connection.cursor()
+
+try:
+    updates = []
+    values = []
+
+    if pallet_id != None:
+        updates.append("Pallet_ID = %s")
+        values.append(pallet_id)
+
+    if lumber_price != None:
+        updates.append("Lumber_Price = %s")
+        values.append(lumber_price)
+    
+    if customer_id != None: 
+        updates.append("Customer_ID = %s")
+        values.append(customer_id)
+   
+    if order_date != None:
+        updates.append("Order_Date = %s")
+        values.append(order_date)
+   
+    if quantity != None:
+        updates.append("Quantity = %s")
+        values.append(quantity)
+        
+    if not updates:
+            print("No updates.")
+            return False
+
+        values.append(order_id)
+        query = f"""UPDATE orders SET {', '.join(updates)} WHERE Order_ID = %s"""
+        cursor.execute(query, tuple(values))
+        connection.commit()
+
+        return cursor.rowcount > 0
+    except Exception as e:
+        print("Error updtating inventory:", e)
+        connection.rollback()
+        return False
+    finally: 
+        cursor.close()
+
