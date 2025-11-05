@@ -8,6 +8,23 @@ def generate_id(length=6):
     chars = string.ascii_uppercase + string.digits
     return ''.join(random.choices(chars, k=length))
 
+def create_database():
+    try:
+        connection = connection = mysql.connector.connect(
+            host='localhost',
+            port=3307,
+            user='root',
+            password=''
+        )
+        cursor = connection.cursor()
+        cursor.execute("CREATE DATABASE IF NOT EXISTS icwp_db")
+        print("Database created successfully")
+    except Error as e:
+        print("Database connection failed:", e)
+    finally:
+        connection.close()
+        
+
 #connect to mysql db
 def create_connection():
     try:
@@ -15,7 +32,7 @@ def create_connection():
             host='localhost',
             port=3307,
             user='root',
-            password='ICWP',
+            password='',
             database='icwp_db'
         )
         if connection.is_connected():
