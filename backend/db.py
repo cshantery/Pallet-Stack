@@ -6,9 +6,9 @@ def get_db_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            port=3307,
+            port=3306,
             user='root',
-            password='ICWP',
+            password='',
             database='icwp_db'
         )
         if connection.is_connected():

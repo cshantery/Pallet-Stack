@@ -17,7 +17,7 @@ def insert_invoice(customer_id, order_id, order_price):
     cursor = connection.cursor()
     invoice_id = generate_invoice_id()
     try:
-        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s) """
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s,%s) """
         cursor.execute(query, (invoice_id, customer_id, order_id, order_price))
         connection.commit()
         return True
@@ -147,14 +147,14 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
         cursor.close()
 
 #create order
-def insert_order(order_id, pallet_id, customer_id, lumber_price, date, quantity):
+def insert_order(order_id, pallet_id, lumber_price, customer_id, date, quantity):
     connection = get_db_connection()
     cursor = connection.cursor()
 
     try:
         query = """INSERT INTO orders (Order_ID, Pallet_ID, Lumber_Price, Customer_ID, Order_Date, Quantity) 
-        VALUES (%s,%s,%s,%s,%s,%s,)"""
-        cursor.execute(query, (order_id, pallet_id, customer_id, lumber_price, date, quantity))
+        VALUES (%s,%s,%s,%s,%s,%s)"""
+        cursor.execute(query, (order_id, pallet_id, lumber_price, customer_id, date, quantity))
         connection.commit()
         return True
     except Exception as e:
@@ -253,3 +253,21 @@ def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= Non
     finally: 
         cursor.close()
 
+def delete_order(order_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        query = "DELETE FROM orders WHERE Order_ID = %s"
+        cursor.execute(query, (order_id,))
+        connection.commit()
+        
+        #return true if at least one row was deleted
+        return cursor.rowcount > 0  
+    
+    except Exception as e:
+        print(" Error deleting order {order_id}:", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()

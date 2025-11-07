@@ -8,11 +8,35 @@ def generate_id(length=6):
     chars = string.ascii_uppercase + string.digits
     return ''.join(random.choices(chars, k=length))
 
+def has_dataBase():
+    try:
+        connection = connection = mysql.connector.connect(
+            host='localhost',
+            port=3306,
+            user='root',
+            password=''
+        )
+        if connection.is_connected():
+            cursor = connection.cursor()
+            db_name = "icwp_db"
+            cursor.execute("SHOW DATABASES")
+
+            databases =[db[0] for db in cursor.fetchall()]
+            if db_name in databases:
+                return True
+            else:
+                return False
+    except Error as e:
+        print("❌ Connection failed:", e)
+    finally:
+        cursor.close()
+        connection.close()
+
 def create_database():
     try:
         connection = connection = mysql.connector.connect(
             host='localhost',
-            port=3307,
+            port=3306,
             user='root',
             password=''
         )
@@ -30,7 +54,7 @@ def create_connection():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            port=3307,
+            port=3306,
             user='root',
             password='',
             database='icwp_db'
@@ -104,8 +128,8 @@ def create_tables(connection):
             """
             CREATE TABLE IF NOT EXISTS invoice (
                 Invoice_ID CHAR(6) PRIMARY KEY,
+                Customer_ID CHAR(6),
                 Order_ID CHAR(6),
-                Pallet_ID CHAR(6),
                 Order_Price DOUBLE
             )
             """
