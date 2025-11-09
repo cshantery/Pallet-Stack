@@ -1,5 +1,5 @@
-from backend.setup_db import *
-from backend.modules import *
+from setup_db import *
+from modules import *
 
 def test_db():
     if(not has_dataBase()):

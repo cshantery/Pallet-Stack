@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Invoices{% endblock %}
+
+{% block content %}
+<h2>Invoices</h2>
+
+<div class="search">
+    <input type="text" id="customerId" placeholder="Customer ID">
+    <input type="text" id="invoiceId" placeholder="Invoice ID">
+    <input type="text" id="orderId" placeholder="Order ID">
+    <button onclick="searchInvoices()">Search</button>
+</div>
+
+<table border="1" cellpadding="5" style="margin-top: 10px;"></table>
+    <thead>
+        <tr>
+            <th>Invoice ID</th>
+            <th>Customer ID</th>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody id="invoiceBody"></tbody>
+</table>
+{% endblock %}

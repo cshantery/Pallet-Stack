@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
-from backend.db import get_db_connection
+from backend.db import get_db
 
 users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/users', methods=['GET'])
 def get_users():
-    conn = get_db_connection()
+    conn = get_db()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM users")
     results = cursor.fetchall()
@@ -16,7 +16,7 @@ def get_users():
 @users_bp.route('/users', methods=['POST'])
 def add_user():
     data = request.json
-    conn = get_db_connection()
+    conn = get_db()
     cursor = conn.cursor()
     cursor.execute("INSERT INTO users (name, email) VALUES (%s, %s)", 
                    (data['name'], data['email']))

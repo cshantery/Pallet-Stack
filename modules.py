@@ -1,23 +1,18 @@
 # will have sql query functions
 #impliment CRUD operations for specified tables
 
-from backend.db import get_db_connection
-import uuid
+from db import get_db
 
-
-#this will genrate a randome unique ID .hex 5 will take only the first 5 digits
-def generate_invoice_id():
-    return "INV" + str(uuid.uuid4().hex[:5]).upper()
 
 
 
 #create invoice
-def insert_invoice(customer_id, order_id, order_price):
-    connection = get_db_connection()
+def insert_invoice(invoice_id, customer_id, order_id, order_price):
+    connection = get_db()
     cursor = connection.cursor()
-    invoice_id = generate_invoice_id()
+   
     try:
-        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s,%s) """
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s) """
         cursor.execute(query, (invoice_id, customer_id, order_id, order_price))
         connection.commit()
         return True
@@ -30,7 +25,7 @@ def insert_invoice(customer_id, order_id, order_price):
 
 #read operation for invoice, search by customer id invoice id or order id
 def search_invoice(invoice_id = None, order_id = None, customer_id = None):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
 
     try:
@@ -58,7 +53,7 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
     
 #update operation for invoice table
 def update_invoice(invoice_id, customer_id = None, order_id = None, order_price = None):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
 
     try:
@@ -99,7 +94,7 @@ def update_invoice(invoice_id, customer_id = None, order_id = None, order_price 
 
 
 def delete_invoice(invoice_id):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
 
     try:
@@ -118,9 +113,28 @@ def delete_invoice(invoice_id):
         cursor.close()
 
 
+#create order
+def insert_order(order_id, pallet_id, customer_id, lumber_price, date, quantity):
+    connection = get_db()
+    cursor = connection.cursor()
+
+    try:
+        query = """INSERT INTO orders (Order_ID, Pallet_ID, Lumber_Price, Customer_ID, Order_Date, Quantity) 
+        VALUES (%s,%s,%s,%s,%s,%s,)"""
+        cursor.execute(query, (order_id, pallet_id, customer_id, lumber_price, date, quantity))
+        connection.commit()
+        return True
+    except Exception as e:
+        print("Error creating order:", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+
+
 #orders can be view by order_id, pallet_id, or customer_id
 def view_orders(order_id = None, pallet_id = None, customer_id = None):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
 
     try:
@@ -146,27 +160,10 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
     finally:
         cursor.close()
 
-#create order
-def insert_order(order_id, pallet_id, lumber_price, customer_id, date, quantity):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-
-    try:
-        query = """INSERT INTO orders (Order_ID, Pallet_ID, Lumber_Price, Customer_ID, Order_Date, Quantity) 
-        VALUES (%s,%s,%s,%s,%s,%s)"""
-        cursor.execute(query, (order_id, pallet_id, lumber_price, customer_id, date, quantity))
-        connection.commit()
-        return True
-    except Exception as e:
-        print("Error creating order:", e)
-        connection.rollback()
-        return False
-    finally:
-        cursor.close()
 
 #update operation for inventory table
 def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_count= None, price= None):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
       
     try: 
@@ -194,7 +191,7 @@ def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_cou
             return False
 
         values.append(pallet_id)
-        query = f"""UPDATE pallets SET {', '.join(updates)} WHERE Pallet_ID = %s"""
+        query = f"""UPDATE Inevntory SET {', '.join(updates)} WHERE Pallet_ID = %s"""
         cursor.execute(query, tuple(values))
         connection.commit()
 
@@ -207,9 +204,10 @@ def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_cou
     finally: 
         cursor.close()
 
+
 #Update orders table
 def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= None, order_date= None, quantity= None ):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
 
     try:
@@ -254,7 +252,7 @@ def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= Non
         cursor.close()
 
 def delete_order(order_id):
-    connection = get_db_connection()
+    connection = get_db()
     cursor = connection.cursor()
 
     try:

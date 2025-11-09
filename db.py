@@ -2,13 +2,13 @@ import mysql.connector
 from mysql.connector import Error
 
 #connect to mysql db
-def get_db_connection():
+def get_db():
     try:
         connection = mysql.connector.connect(
             host='localhost',
-            port=3306,
+            port=3307,
             user='root',
-            password='',
+            password='ICWP',
             database='icwp_db'
         )
         if connection.is_connected():
