@@ -9,9 +9,9 @@
     <h1 class="centered-text">Pallet Stack</h1>
         
     <div class="home-buttons">
-         <button id="manageOrders" class="home-btn">Manage Orders</button>
-         <button id="manageInventory" class="home-btn">Manage Inventory</button>
-         <button id="manageInvoices" class="home-btn">Manage Invoices</button>
+         <a href="{{ url_for('orders') }}" class="home-btn">Manage Orders</a>
+         <a href="{{ url_for('inventory') }}" class="home-btn">Manage Inventory</a>
+         <a href="{{ url_for('invoices') }}" class="home-btn">Manage Invoices</a>
     </div>
 
 </div>

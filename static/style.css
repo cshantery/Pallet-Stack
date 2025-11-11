@@ -98,6 +98,7 @@ main {
     cursor: pointer;
     font-weight: 600;
     transition: background-color 0.2s ease;
+    text-decoration: none;
 }
 
 .home-btn:hover {
