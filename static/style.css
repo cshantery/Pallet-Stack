@@ -33,10 +33,10 @@ nav{
     align-items: center;
 }
 nav .navbar-brand {
-    font-size: 1.5rem; /* Make the brand name bigger */
+    font-size: 1.5rem; 
     font-weight: bold;
-    color: #ecf0f1; /* A light gray/white */
-    text-decoration: none; /* Remove underline */
+    color: #ecf0f1; 
+    text-decoration: none;
 }
 nav a {
     color: #c2c7c5;
@@ -72,20 +72,20 @@ main {
 .home-dashboard {
     display: flex;
     flex-direction: column;  
-    align-items: center;     /* Center items horizontally */
-    padding-top: 50px;       /* Add some space from the top of the content area */
+    align-items: center;     
+    padding-top: 50px;       
 }
 
-/* This assumes your .centered-text class already centers the text */
+
 .centered-text {
     text-align: center;
 
 }
 
 .home-buttons {
-    display: flex;           /* Arrange children (the buttons) in a row */
-    justify-content: center; /* Center the buttons horizontally */
-    gap: 20px;               /* This adds a nice 20px space between each button */
+    display: flex;           
+    justify-content: center;
+    gap: 20px;              
 }
 
 .home-btn {
@@ -159,7 +159,7 @@ main {
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    overflow-y: auto; /* scrolls if too much data */
+    overflow-y: auto; 
 }
 
 .main-content h2 {
