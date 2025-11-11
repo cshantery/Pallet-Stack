@@ -269,3 +269,21 @@ def delete_order(order_id):
         return False
     finally:
         cursor.close()
+
+def delete_inventory(pallet_id):
+    connection = get_db()
+    cursor = connection.cursor()
+
+    try:
+        query = "DELETE FROM inventory WHERE Pallet_ID = %s"
+        cursor.execute(query, (pallet_id,))
+        connection.commit()
+
+        return cursor.rowcount > 0
+    
+    except Exception as e:
+        print(f" Error deleting inventory {pallet_id}:", e)
+        connection.rollback()
+        return False
+    finally: 
+        cursor.close()
