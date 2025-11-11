@@ -2,18 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Inventory System{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+
     <header>
-        <h1>Inventory Management System</h1>
         <nav>
-            <a href="{{ url_for('home') }}">Home</a> |
-            <a href="{{ url_for('Inventory') }}">Inventory</a> |
-            <a href="{{ url_for('orders') }}">Orders</a> |
-            <a href="{{ url_for('invoices) }}">Invoices</a>
+            <a class="navbar-brand" href="{{ url_for('home') }}">Pallet Stack</a>
+            <ul>
+                <li>
+                    <a href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('inventory') }}">Inventory</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('orders') }}">Orders</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('invoices') }}">Invoices</a>
+                </li>
+            </ul>
         </nav>
     </header>
 
@@ -22,7 +36,11 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 My Company</p>
+        <p>&copy; 2025 Pallet Stack</p>
     </footer>
+
+    {% block scripts %}
+    {% endblock %}
+
 </body>
 </html>

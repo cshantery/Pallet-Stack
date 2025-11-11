@@ -12,3 +12,7 @@ addInventoryButton.addEventListener('click', () =>{
         addInventoryButton.textContent = 'Add Inventory'
     }
 });
+
+submitInventoryButton.addEventListener('click', () => {
+    const palletName = getElementById('')
+});

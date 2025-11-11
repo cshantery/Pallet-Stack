@@ -1,27 +1,35 @@
 {% extends 'base.html' %}
 
-{% block title %}Invoices{% endblock %}
+{% block title %}Invoice Dashboard{% endblock %}
 
 {% block content %}
-<h2>Invoices</h2>
+<div class="inventory-dashboard">
+    <aside class="sidebar">
+        <h2>Invoice Actions</h2>
+        <button id="searchInvoiceButton" class="sidebar-btn">Search Invoices</button>
+        <button id="printInvoiceButton" class="sidebar-btn">Print Invoice</button>
+        </aside>
 
-<div class="search">
-    <input type="text" id="customerId" placeholder="Customer ID">
-    <input type="text" id="invoiceId" placeholder="Invoice ID">
-    <input type="text" id="orderId" placeholder="Order ID">
-    <button onclick="searchInvoices()">Search</button>
+    <section class="main-content">
+        <h2>Invoice Records</h2>
+
+        <table id="invoiceTable">
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-table-body">
+                </tbody>
+        </table>
+    </section>
 </div>
+{% endblock %}
 
-<table border="1" cellpadding="5" style="margin-top: 10px;"></table>
-    <thead>
-        <tr>
-            <th>Invoice ID</th>
-            <th>Customer ID</th>
-            <th>Order ID</th>
-            <th>Date</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody id="invoiceBody"></tbody>
-</table>
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/invoices.js') }}"></script>
 {% endblock %}

@@ -7,11 +7,11 @@ import modules
 app = Flask(__name__)
 CORS(app)
 
-app.register_blueprint(users_bp, url_prefix='/api')
+##app.register_blueprint(users_bp, url_prefix='/api')
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/invoices')
 def invoices():

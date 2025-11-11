@@ -1,0 +1,205 @@
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Playfair Display', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #3b6088;
+}
+
+
+header, footer {
+    background-color: #3b6088 ;
+    padding: 25px 25px;
+    box-shadow: 0 1px 3px rgba(64, 49, 49, 0.1);
+}
+
+
+main h1 {
+    margin: 2;
+    font-size: 6.0rem;
+    color: #dad5d5;
+}
+
+nav{
+    display: flex;
+    justify-content: bold;
+    align-items: center;
+}
+nav .navbar-brand {
+    font-size: 1.5rem; /* Make the brand name bigger */
+    font-weight: bold;
+    color: #ecf0f1; /* A light gray/white */
+    text-decoration: none; /* Remove underline */
+}
+nav a {
+    color: #c2c7c5;
+    text-decoration: none;
+    font-weight: 500;
+    margin: 0 10px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+nav ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.0rem;
+}
+footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #729275;
+}
+
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-dashboard {
+    display: flex;
+    flex-direction: column;  
+    align-items: center;     /* Center items horizontally */
+    padding-top: 50px;       /* Add some space from the top of the content area */
+}
+
+/* This assumes your .centered-text class already centers the text */
+.centered-text {
+    text-align: center;
+
+}
+
+.home-buttons {
+    display: flex;           /* Arrange children (the buttons) in a row */
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 20px;               /* This adds a nice 20px space between each button */
+}
+
+.home-btn {
+    background-color: #4a856b;
+    color: #dbd8d8;
+    border: none;
+    padding: 13px 25px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.home-btn:hover {
+    background-color: #1aa863;
+}
+
+
+.inventory-dashboard {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-height: calc(100vh - 120px); 
+    gap: 20px;
+    padding: 20px;
+    background-color: #9fbad7;;
+    box-sizing: border-box;
+}
+
+
+.sidebar {
+    width: 220px;
+    background: #d3deed;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.sidebar h2 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+}
+
+.sidebar-btn {
+    background-color: #4a856b;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-btn:hover {
+    background-color: #1aa863;
+}
+
+
+.main-content {
+    flex: 1;
+    background-color: #d3deed;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow-y: auto; /* scrolls if too much data */
+}
+
+.main-content h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+
+table[id$="Table"]{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+table[id$="Table"] thead {
+    background-color: #dee3ed;
+}
+
+table[id$="Table"] th, 
+table[id$="Table"] td {
+    border: 1px solid #d1d5db;
+    text-align: left;
+    padding: 10px;
+}
+
+table[id$="Table"] th {
+    font-weight: 600;
+    color: #374151;
+}
+
+table[id$="Table"] tr:nth-child(even) {
+    background-color: #fefeff;
+}
+
+table[id$="Table"] tr:nth-child(odd) {
+    background-color: #ececee;
+}
+
+table[id$="Table"] tr:hover {
+    background-color: #d4d4d4;
+}
+
+
