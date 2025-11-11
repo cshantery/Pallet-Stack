@@ -161,50 +161,6 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
         cursor.close()
 
 
-#update operation for inventory table
-def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_count= None, price= None):
-    connection = get_db()
-    cursor = connection.cursor()
-      
-    try: 
-        updates = []
-        values = []
-
-        if pallet_condition != None: 
-            updates.append("Pallet_Condition = %s")
-            values.append(pallet_condition)
-        
-        if size != None:
-            updates.append("Size = %s")
-            values.append(size)
-        
-        if inventory_count != None:
-            updates.append("Inventory_Count = %s")
-            values.append(inventory_count)
-
-        if price != None:
-            updates.append("Price = %s")
-            values.append(price)
-
-        if not updates:
-            print("No updates.")
-            return False
-
-        values.append(pallet_id)
-        query = f"""UPDATE Inevntory SET {', '.join(updates)} WHERE Pallet_ID = %s"""
-        cursor.execute(query, tuple(values))
-        connection.commit()
-
-        return cursor.rowcount > 0
-
-    except Exception as e:
-        print("Error updtating inventory:", e)
-        connection.rollback()
-        return False
-    finally: 
-        cursor.close()
-
-
 #Update orders table
 def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= None, order_date= None, quantity= None ):
     connection = get_db()
@@ -269,6 +225,87 @@ def delete_order(order_id):
         return False
     finally:
         cursor.close()
+
+
+#create inventory
+def insert_inventory(pallet_condition, size, inventory_count, price):
+    connection = get_db()
+    cursor = connection.cursor()
+   
+    try:
+        query =  """ INSERT INTO pallets (Pallet_Condition, Size, Inventory_Count, Price) VALUES(%s,%s,%s,%s) """
+        cursor.execute(query, (pallet_condition, size, inventory_count, price))
+        connection.commit()
+        return True
+    except Exception as e:
+        print("Error creating inventory:", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+
+#read inventory 
+def get_inventory():
+    connection = get_db()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        query = """ SELECT * FROM pallets ORDER BY pallet_id"""
+        cursor.execute(query)
+        results = cursor.fetchall()
+        return results
+    except Exception as e:
+        print("Error fetching inventory", e)
+        cconnection.rollback()
+        return False
+    finally:
+        cursor.close()
+   
+
+
+#update operation for inventory table
+def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_count= None, price= None):
+    connection = get_db()
+    cursor = connection.cursor()
+      
+    try: 
+        updates = []
+        values = []
+
+        if pallet_condition != None: 
+            updates.append("Pallet_Condition = %s")
+            values.append(pallet_condition)
+        
+        if size != None:
+            updates.append("Size = %s")
+            values.append(size)
+        
+        if inventory_count != None:
+            updates.append("Inventory_Count = %s")
+            values.append(inventory_count)
+
+        if price != None:
+            updates.append("Price = %s")
+            values.append(price)
+
+        if not updates:
+            print("No updates.")
+            return False
+
+        values.append(pallet_id)
+        query = f"""UPDATE Inevntory SET {', '.join(updates)} WHERE Pallet_ID = %s"""
+        cursor.execute(query, tuple(values))
+        connection.commit()
+
+        return cursor.rowcount > 0
+
+    except Exception as e:
+        print("Error updtating inventory:", e)
+        connection.rollback()
+        return False
+    finally: 
+        cursor.close()
+
 
 def delete_inventory(pallet_id):
     connection = get_db()

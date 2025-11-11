@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
-import modules
+import modules as db
 
 
 
@@ -25,6 +25,9 @@ def orders():
 def inventory():
     return render_template('inventory.html')
 
+
+
+
 @app.route('/api/invoices', methods=['GET'])
 def search_invoices():
     invoice_id = request.args.get('invoice_id')
@@ -33,6 +36,8 @@ def search_invoices():
 
     results = modules.search_invoice(invoice_id, order_id, customer_id)
     return jsonify(results), 200
+
+
 
 
 @app.route('/api/invoices', methods=['POST'])
@@ -49,6 +54,9 @@ def create_invoices():
     else:
         return jsonify({"error" : "failed to create invoice"}), 400
 
+
+
+
 @app.route('/api/invoices/<invoice_id>', methods=['PUT'])
 def update_invoices(invoice_id):
     data = request.get_json()
@@ -63,6 +71,8 @@ def update_invoices(invoice_id):
         return jsonify({"error" : "invoice could not be updated"}), 400
     
 
+
+
 @app.route('/api/invoices/<invoice_id>', methods=['DELETE'])
 def delete_invoices(invoice_id):
     complete = modules.delete_invoice(invoice_id)
@@ -70,7 +80,41 @@ def delete_invoices(invoice_id):
         return jsonify({"message": f"invoice {invoice_id} deleted"}), 200
     else:
         return jsonify({"message" : "invoice not found or deletion failed"}), 400
-    
+
+
+
+
+@app.route('/api/inventory', methods=['POST'])
+def create_inventory():
+    data = request.get_json()
+    pallet_condition = data.get('pallet_condition')
+    size = data.get('size')
+    inventory_count = data.get('inventory_count')
+    price = data.get('price')
+    complete = db.insert_inventory(pallet_condition, size, inventory_count, price)
+    if complete:
+        return jsonify({"message" : "Inventory successfully created"}), 201
+    else:
+        return jsonify({"error" : "failed to create inventory"}), 400
+
+
+
+
+@app.route('/api/inventory', methods=['GET'])
+def get_inventory():
+  
+    try:
+        items = db.get_inventory()
+        return jsonify(items)
+
+    except Exception as e:
+        print(f"Error in GET /api/inventory: {e}")
+        return jsonify({"error": "Failed to fetch inventory"}), 500
+
+
+
+
+
 @app.route('/api/inventory/<pallet_id>', methods=['DELETE'])
 def delete_inventory(pallet_id):
     complete = modules.delete_inventory(pallet_id)
@@ -78,6 +122,9 @@ def delete_inventory(pallet_id):
         return jsonify({"message": f"inventory {pallet_id} deleted"}), 200
     else:
         return jsonify({"message" : "inventory not found or deletion failed"}), 400
+
+
+
 
 @app.route('/api/inventory/<pallet_id>', methods=['PUT'])
 def update_inventory(pallet_id):
@@ -92,7 +139,10 @@ def update_inventory(pallet_id):
         return jsonify({"message" : "inventory update complete"}), 200
     else:
         return jsonify({"error" : "inventory could not be updated"}), 400
-    
+
+
+
+
 @app.route('/api/order', methods=['POST'])
 def create_order():
     data = request.get_json()
@@ -109,6 +159,9 @@ def create_order():
     else: 
         return jsonify({"error" : "failed to create order"}), 400
 
+
+
+
 @app.route('/api/order', methods=['GET'])
 def search_order():
     order_id = request.args.get('order_id')
@@ -117,6 +170,8 @@ def search_order():
     
     results = modules.view_orders(order_id, pallet_id, customer_id)
     return jsonify(results), 200
+
+
 
 
 @app.route('/api/order/<order_id>', methods=['PUT'])
@@ -133,7 +188,10 @@ def update_order(order_id):
         return jsonify({"message" : "order update complete"}), 200
     else:
         return jsonify({"error" : "order could not be updated"}), 400
-    
+
+
+
+
 @app.route('/api/order/<order_id>', methods=['DELETE'])
 def delete_order(order_id):
     complete = modules.delete_order(order_id)

@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="inventory-dashboard">
-    <!-- Sidebar -->
+  
     <aside class="sidebar">
         <h2>Actions</h2>
         <button id="addInventoryButton" class="sidebar-btn">Add Inventory</button>
@@ -13,48 +13,58 @@
         <button id="deleteInventoryButton" class="sidebar-btn">Delete Inventory</button>
     </aside>
 
-    <!-- Main Content -->
+  
     <section class="main-content">
         <h2>Current Inventory</h2>
 
         <table id="inventoryTable">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Type</th>
-                    <th>Model</th>
-                    <th>Status</th>
-                    <th>Count</th>
+                    <th>Pallet_ID</th>
+                    <th>Pallet_Condition</th>
+                    <th>Size</th>
+                    <th>Inventory_Count</th>
+                    <th>Price/Unit</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Example rows -->
-                <tr>
-                    <td>001</td>
-                    <td>Asset Tag</td>
-                    <td>Laptop</td>
-                    <td>Ready</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Calculator</td>
-                    <td>ti-83</td>
-                    <td>On Order</td>
-                    <td>10</td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Tablet</td>
-                    <td>2nd Gen</td>
-                    <td>New</td>
-                    <td>50</td>
-                </tr>
+            <tbody id = "inventoryTableBody">
+
+
             </tbody>
         </table>
     </section>
+
+    <div id="addInventoryModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Add New Inventory</h2>
+
+            <form id="addInventoryForm">
+                <div class="form-group">
+                    <label for="palletCondition">Pallet Condition</label>
+                    <input type="text" id="palletCondition" name="pallet_condition" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="palletSize">Size</label>
+                    <input type="text" id="palletSize" name="size" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="inventoryCount">Inventory Count</label>
+                    <input type="number" id="inventoryCount" name="inventory_count" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="palletPrice">Price/Unit</label>
+                    <input type="number" id="palletPrice" name="price" step="0.01" required>
+                </div>
+
+                <button type="submit" class="sidebar-btn">Add to Inventory</button>
+            </form>
+        </div>
 </div>
 {% endblock %}
 {% block scripts %}
-    <script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+    <script src="{{ url_for('static', filename='inventory.js') }}"></script>
 {% endblock %}

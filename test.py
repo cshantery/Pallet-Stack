@@ -15,3 +15,6 @@ def test_db():
     print("view orders after update", view_orders())
     delete_order("111111")
     print("view orders after delete order", view_orders())
+
+    if __name__ == "main":
+        test_db()

@@ -1,20 +1,15 @@
 import mysql.connector
 from mysql.connector import Error
-import random
-import string
 
-# randomly generate ID
-def generate_id(length=6):
-    chars = string.ascii_uppercase + string.digits
-    return ''.join(random.choices(chars, k=length))
+import string
 
 def has_dataBase():
     try:
         connection = connection = mysql.connector.connect(
-            host='localhost',
+            host='127.0.0.1',
             port=3306,
             user='root',
-            password=''
+            password='Ruby1313!'
         )
         if connection.is_connected():
             cursor = connection.cursor()
@@ -27,7 +22,7 @@ def has_dataBase():
             else:
                 return False
     except Error as e:
-        print("❌ Connection failed:", e)
+        print(" Connection failed:", e)
     finally:
         cursor.close()
         connection.close()
@@ -35,10 +30,10 @@ def has_dataBase():
 def create_database():
     try:
         connection = connection = mysql.connector.connect(
-            host='localhost',
+            host='127.0.0.1',
             port=3306,
             user='root',
-            password=''
+            password='Ruby1313!'
         )
         cursor = connection.cursor()
         cursor.execute("CREATE DATABASE IF NOT EXISTS icwp_db")
@@ -53,17 +48,16 @@ def create_database():
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost',
+            host='127.0.0.1',
             port=3306,
             user='root',
-            password='',
-            database='icwp_db'
+            password='Ruby1313!'
         )
         if connection.is_connected():
             print(" Connected to MySQL version:", connection.get_server_info())
             return connection
     except Error as e:
-        print("❌ Connection failed:", e)
+        print(" Connection failed:", e)
         return None
 
 #create tables 
@@ -72,18 +66,10 @@ def create_tables(connection):
         cursor = connection.cursor()
 
         tables = [
-            """
-            CREATE TABLE IF NOT EXISTS users (
-                id CHAR(6) PRIMARY KEY,
-                username VARCHAR(50) NOT NULL,
-                email VARCHAR(100),
-                password VARCHAR(100),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-            """,
+
             """
             CREATE TABLE IF NOT EXISTS pallets (
-                Pallet_ID CHAR(6) PRIMARY KEY,
+                Pallet_ID INT PRIMARY KEY AUTO_INCREMENT,
                 Pallet_Condition VARCHAR(25),
                 Size VARCHAR(25),
                 Inventory_Count INT,
@@ -92,7 +78,7 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS customer (
-                Customer_ID CHAR(6) PRIMARY KEY,
+                Customer_ID INT PRIMARY KEY AUTO_INCREMENT,
                 Customer_Name VARCHAR(25),
                 Phone VARCHAR(25),
                 Address VARCHAR(25)
@@ -100,7 +86,7 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS supplier (
-                Supplier_ID CHAR(6) PRIMARY KEY,
+                Supplier_ID INT PRIMARY KEY AUTO_INCREMENT,
                 Supplier_type VARCHAR(25),
                 Supplier_Name VARCHAR(25),
                 Supplier_Phone VARCHAR(25),
@@ -109,7 +95,7 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS orders (
-                Order_ID CHAR(6) PRIMARY KEY,
+                Order_ID INT PRIMARY KEY AUTO_INCREMENT,
                 Pallet_ID CHAR(6),
                 Lumber_Price DOUBLE,
                 Customer_ID CHAR(6),
@@ -119,7 +105,7 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS shipments (
-                Shipment_ID CHAR(6) PRIMARY KEY,
+                Shipment_ID INT PRIMARY KEY AUTO_INCREMENT,
                 Order_ID CHAR(6),
                 Shipment_Date DATE,
                 Shipment_Status VARCHAR(25)
@@ -127,17 +113,18 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS invoice (
-                Invoice_ID CHAR(6) PRIMARY KEY,
+                Invoice_ID INT PRIMARY KEY AUTO_INCREMENT,
                 Customer_ID CHAR(6),
                 Order_ID CHAR(6),
-                Order_Price DOUBLE
+                Order_Price DOUBLE,
+                Invoice_Status CHAR(10)
             )
             """
         ]
 
         for table in tables:
             cursor.execute(table)
-        print("🧱 Tables created successfully!")
+        print(" Tables created successfully!")
     except Error as e:
-        print("❌ Table creation failed:", e)
+        print(" Table creation failed:", e)
 
