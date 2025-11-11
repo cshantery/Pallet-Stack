@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import modules as db
+import setup_db as setup
 
 
 
@@ -201,4 +202,9 @@ def delete_order(order_id):
         return jsonify({"message" : "order not found or deletion failed"}), 400
 
 if __name__ == '__main__':
+
+    if(not setup.has_dataBase()):
+        setup.create_database()
+        setup.create_tables(setup.create_connection())
+
     app.run(debug=True)

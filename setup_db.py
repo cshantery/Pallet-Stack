@@ -51,7 +51,8 @@ def create_connection():
             host='127.0.0.1',
             port=3306,
             user='root',
-            password='Ruby1313!'
+            password='Ruby1313!',
+            database='icwp_db'
         )
         if connection.is_connected():
             print(" Connected to MySQL version:", connection.get_server_info())
