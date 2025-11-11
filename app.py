@@ -17,7 +17,7 @@ def home():
 def invoices():
     return render_template('invoices.html')
 
-@app.route('/orders')
+@app.route('/order')
 def orders():
     return render_template('order.html')
 
@@ -92,6 +92,32 @@ def update_inventory(pallet_id):
         return jsonify({"message" : "inventory update complete"}), 200
     else:
         return jsonify({"error" : "inventory could not be updated"}), 400
+    
+@app.route('/api/order', methods=['POST'])
+def create_order():
+    data = request.get_json()
+    order_id = data.get('order_id')
+    pallet_id = data.get('pallet_id')
+    lumber_price = data.get('lumber_price')
+    customer_id = data.get('customer_id')
+    order_date = data.get('order_date')
+    quantity = data.get('quantity')
+
+    complete = modules.insert_order(order_id, pallet_id, lumber_price, customer_id, order_date, quantity)
+    if complete:
+        return jsonify({"message" : "Order successfully created"}), 201 
+    else: 
+        return jsonify({"error" : "failed to create order"}), 400
+
+@app.route('/api/order', methods=['GET'])
+def search_order():
+    order_id = request.args.get('order_id')
+    pallet_id = request.args.get('pallet_id')
+    customer_id = request.args.get('customer_id')
+    
+    results = modules.view_orders(order_id, pallet_id, customer_id)
+    return jsonify(results), 200
+
 
 @app.route('/api/order/<order_id>', methods=['PUT'])
 def update_order(order_id):
@@ -107,6 +133,14 @@ def update_order(order_id):
         return jsonify({"message" : "order update complete"}), 200
     else:
         return jsonify({"error" : "order could not be updated"}), 400
+    
+@app.route('/api/order/<order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    complete = modules.delete_order(order_id)
+    if complete:
+        return jsonify({"message": f"order {order_id} deleted"}), 200
+    else:
+        return jsonify({"message" : "order not found or deletion failed"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
