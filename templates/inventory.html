@@ -3,18 +3,29 @@
 {% block title %}Inventory{% endblock %}
 
 {% block content %}
-<h2>Inventory List</h2>
-<table id="inventoryTable">
-    <thead>
-        <tr>
-            <th>Item ID</th>
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody id="inventoryBody">
-        <!-- JS will populate -->
-    </tbody>
-</table>
+<h1>Inventory Management</h1>
+
+<button id="addInventoryButton">Add New Inventory Item</button>
+
+<div id="inventoryForm" style="display: none;">
+    <h2>Add Inventory Item</h2>
+    <label for="pallet_condition">Pallet Condition:</label>
+    <select id = "pallet_condition" name = "pallet_condition">
+        <option value = "new">New</option>
+        <option value = "recycled">Recycled</option>
+        <option value = "combonation pallet">Combonation Pallet</option>
+    </select>
+ 
+
+    <label for="inventory_count">Quantity:</label>
+    <input type="number" id="inventory_count" name="itemQuantity"><br><br>
+
+    <label for="itemPrice">Price per Unit:</label>
+    <input type="number" id="itemPrice" name="itemPrice" step="0.01"><br><br>
+
+    <button id="submitInventory">Save</button>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
+
