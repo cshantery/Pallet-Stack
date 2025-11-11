@@ -287,3 +287,51 @@ def delete_inventory(pallet_id):
         return False
     finally: 
         cursor.close()
+
+         #create inventory (pallet)
+def insert_inventory(pallet_id, pallet_condition, size, inventory_count, price):
+    connection = get_db()
+    cursor = connection.cursor()
+   
+    try:
+        # Uses the 'pallets' table from setup_db.py
+        query =  """INSERT INTO pallets (Pallet_ID, Pallet_Condition, Size, Inventory_Count, Price) 
+                    VALUES (%s, %s, %s, %s, %s)"""
+        cursor.execute(query, (pallet_id, pallet_condition, size, inventory_count, price))
+        connection.commit()
+        return True
+    except Exception as e:
+        print("Error creating inventory (pallet):", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+
+#view inventory (pallets)
+def view_inventory(pallet_id = None, pallet_condition = None, size = None):
+    connection = get_db()
+    cursor = connection.cursor()
+
+    try:
+        # Searches the 'pallets' table
+        query = "SELECT * FROM pallets WHERE 1=1"
+        values =[]
+
+        if pallet_id != None:
+            query += " AND Pallet_ID = %s"
+            values.append(pallet_id)
+        if pallet_condition != None:
+            query += " AND Pallet_Condition = %s"
+            values.append(pallet_condition)
+        if size != None:
+            query += " AND Size = %s"
+            values.append(size)
+
+        cursor.execute(query, tuple(values))
+        results = cursor.fetchall()
+        return results
+    except Exception as e:
+        print(" Error searching inventory (pallets):", e)
+        return []
+    finally:
+        cursor.close()
