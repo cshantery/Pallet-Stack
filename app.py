@@ -71,6 +71,42 @@ def delete_invoice(invoice_id):
     else:
         return jsonify({"message" : "invoice not found or deletion failed"}), 400
     
+@app.route('/api/inventory/<pallet_id>', methods=['DELETE'])
+def delete_inventory(pallet_id):
+    complete = modules.delete_inventory(pallet_id)
+    if complete:
+        return jsonify({"message": f"inventory {pallet_id} deleted"}), 200
+    else:
+        return jsonify({"message" : "inventory not found or deletion failed"}), 400
+
+@app.route('/api/inventory/<pallet_id>', methods=['PUT'])
+def update_inventory(pallet_id):
+    data = request.get_json()
+    pallet_condition = data.get('pallet_condition')
+    size = data.get('size')
+    inventory_count = data.get('inventory_count')
+    price = data.get('price')
+
+    complete = modules.update_inventory(pallet_id, pallet_condition, size, inventory_count, price)
+    if complete:
+        return jsonify({"message" : "inventory update complete"}), 200
+    else:
+        return jsonify({"error" : "inventory could not be updated"}), 400
+
+@app.route('/api/order/<order_id>', methods=['PUT'])
+def update_order(order_id):
+    data = request.get_json()
+    pallet_id = data.get('pallet_id')
+    lumber_price = data.get('lumber_price')
+    customer_id = data.get('customer_id')
+    order_date = data.get('order_date')
+    quantity = data.get('quantity')
+
+    complete = modules.update_order(order_id, pallet_id, lumber_price, customer_id, order_date, quantity)
+    if complete:
+        return jsonify({"message" : "order update complete"}), 200
+    else:
+        return jsonify({"error" : "order could not be updated"}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)
