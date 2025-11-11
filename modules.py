@@ -256,7 +256,7 @@ def get_inventory():
         return results
     except Exception as e:
         print("Error fetching inventory", e)
-        cconnection.rollback()
+        connection.rollback()
         return False
     finally:
         cursor.close()
