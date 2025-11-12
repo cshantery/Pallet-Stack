@@ -51,7 +51,8 @@ def create_connection():
             host='127.0.0.1',
             port=3306,
             user='root',
-            password='Ruby1313!'
+            password='Ruby1313!',
+            database='icwp_db'
         )
         if connection.is_connected():
             print(" Connected to MySQL version:", connection.get_server_info())
@@ -114,8 +115,8 @@ def create_tables(connection):
             """
             CREATE TABLE IF NOT EXISTS invoice (
                 Invoice_ID INT PRIMARY KEY AUTO_INCREMENT,
-                Customer_ID CHAR(6),
-                Order_ID CHAR(6),
+                Customer_ID VARCHAR(6),
+                Order_ID VARCHAR(6),
                 Order_Price DOUBLE,
                 Invoice_Status CHAR(10)
             )
