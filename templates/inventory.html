@@ -32,38 +32,9 @@
 
             </tbody>
         </table>
-    </section>
 
-    <div id="addInventoryModal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Add New Inventory</h2>
+    </section> 
 
-            <form id="addInventoryForm">
-                <div class="form-group">
-                    <label for="palletCondition">Pallet Condition</label>
-                    <input type="text" id="palletCondition" name="pallet_condition" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="palletSize">Size</label>
-                    <input type="text" id="palletSize" name="size" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="inventoryCount">Inventory Count</label>
-                    <input type="number" id="inventoryCount" name="inventory_count" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="palletPrice">Price/Unit</label>
-                    <input type="number" id="palletPrice" name="price" step="0.01" required>
-                </div>
-
-                <button type="submit" class="sidebar-btn">Add to Inventory</button>
-            </form>
-        </div>
-</div>
 {% endblock %}
 {% block scripts %}
     <script src="{{ url_for('static', filename='inventory.js') }}"></script>

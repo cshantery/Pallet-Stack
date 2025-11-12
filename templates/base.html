@@ -39,6 +39,25 @@
         <p>&copy; 2025 Pallet Stack</p>
     </footer>
 
+    <div id = "universalModal" class ="modal-overlay">
+        <div class = "modal-content">
+
+            <div class = "modal-header">
+                <h2 id = "modalTitle" > Modal Title</h2>
+                <button id = "modalCloseBtn" class = "modal-close-btn">&times;</button>
+            </div>
+            <div id = "modalBody" class = "modal-body">
+                <p>Modal content here....</p>
+            </div>
+            <div class = "modal-footer">
+                <button id = "modalCancelBtn" class = "modal-btn-secondary" >Cancel</button>
+                <button id = "modalConfirmBtn" class = "modal-btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
+
     {% block scripts %}
     {% endblock %}
 
