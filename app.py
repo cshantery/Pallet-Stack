@@ -35,10 +35,19 @@ def search_invoices():
     order_id = request.args.get('order_id')
     customer_id = request.args.get('customer_id')
 
-    results = modules.search_invoice(invoice_id, order_id, customer_id)
+    results = db.search_invoice(invoice_id, order_id, customer_id)
     return jsonify(results), 200
 
+@app.route('/api/invoice', methods=['GET'])
+def get_invoice():
+  
+    try:
+        items = db.search_invoice()
+        return jsonify(items)
 
+    except Exception as e:
+        print(f"Error in GET /api/invoice: {e}")
+        return jsonify({"error": "Failed to fetch invoice"}), 500
 
 
 @app.route('/api/invoices', methods=['POST'])
@@ -48,8 +57,9 @@ def create_invoices():
     customer_id = data.get('customer_id')
     order_id = data.get('order_id')
     order_price = data.get('order_price')
+    invoice_status = data.get('invoice_status')
 
-    complete = modules.insert_invoice(invoice_id, customer_id, order_id, order_price)
+    complete = db.insert_invoice(invoice_id, customer_id, order_id, order_price, invoice_status)
     if complete:
         return jsonify({"message" : "Invoice successfully created"}), 201
     else:
@@ -65,7 +75,7 @@ def update_invoices(invoice_id):
     order_id = data.get('order_id')
     order_price = data.get('order_price')
 
-    complete = modules.update_invoice(invoice_id, customer_id, order_id, order_price)
+    complete = db.update_invoice(invoice_id, customer_id, order_id, order_price)
     if complete:
         return jsonify({"message" : "invoice update complete"}), 200
     else:
@@ -76,7 +86,7 @@ def update_invoices(invoice_id):
 
 @app.route('/api/invoices/<invoice_id>', methods=['DELETE'])
 def delete_invoices(invoice_id):
-    complete = modules.delete_invoice(invoice_id)
+    complete = db.delete_invoice(invoice_id)
     if complete:
         return jsonify({"message": f"invoice {invoice_id} deleted"}), 200
     else:

@@ -7,13 +7,13 @@ from db import get_db
 
 
 #create invoice
-def insert_invoice(invoice_id, customer_id, order_id, order_price):
+def insert_invoice(invoice_id, customer_id, order_id, order_price, invoice_status):
     connection = get_db()
     cursor = connection.cursor()
    
     try:
-        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price) VALUES(%s,%s,%s) """
-        cursor.execute(query, (invoice_id, customer_id, order_id, order_price))
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price, Invoice_Status) VALUES(%s,%s,%s,%s,%s) """
+        cursor.execute(query, (invoice_id, customer_id, order_id, order_price, invoice_status))
         connection.commit()
         return True
     except Exception as e:
@@ -26,7 +26,7 @@ def insert_invoice(invoice_id, customer_id, order_id, order_price):
 #read operation for invoice, search by customer id invoice id or order id
 def search_invoice(invoice_id = None, order_id = None, customer_id = None):
     connection = get_db()
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
 
     try:
         query = "SELECT * FROM invoice WHERE 1=1"  # 1=1 makes appending conditions easier
@@ -135,7 +135,7 @@ def insert_order(order_id, pallet_id, customer_id, lumber_price, date, quantity)
 #orders can be view by order_id, pallet_id, or customer_id
 def view_orders(order_id = None, pallet_id = None, customer_id = None):
     connection = get_db()
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
 
     try:
         query = "SELECT * FROM orders WHERE 1=1"

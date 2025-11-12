@@ -115,8 +115,8 @@ def create_tables(connection):
             """
             CREATE TABLE IF NOT EXISTS invoice (
                 Invoice_ID INT PRIMARY KEY AUTO_INCREMENT,
-                Customer_ID CHAR(6),
-                Order_ID CHAR(6),
+                Customer_ID VARCHAR(6),
+                Order_ID VARCHAR(6),
                 Order_Price DOUBLE,
                 Invoice_Status CHAR(10)
             )
