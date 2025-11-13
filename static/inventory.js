@@ -48,15 +48,27 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
 
 
-    async function fetchInventory(){
+    async function fetchInventory(search_term = null){
+            try{
+                let url = '/api/inventory';
+            
+            // Add the search term as a URL parameter if it exists
+                if (search_term) {
+                url += `?search=${encodeURIComponent(search_term)}`;
+            }
 
-        try{
-            const response = await fetch('/api/inventory');
-            const data = await response.json();
-            pallet_table.innerHTML = '';
+                const response = await fetch(url);
+                const data = await response.json();
+            
+                pallet_table.innerHTML = ''; // Clear the table body
+            
+            if (data.length === 0) {
+                pallet_table.innerHTML = '<tr><td colspan="5">No inventory found.</td></tr>';
+                return;
+            }
+
             data.forEach(data=> {
                 const row = document.createElement('tr');
-
                 row.innerHTML = `
                     <td>${data.Pallet_ID}</td>
                     <td>${data.Pallet_Condition}</td>
@@ -64,7 +76,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     <td>${data.Inventory_Count}</td>
                     <td>${data.Price}</td>
                 `;
-
 
                 row.addEventListener('click', ()=>{
                     const content = createViewDetailsHTML(data);
@@ -77,8 +88,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 });
 
                 pallet_table.appendChild(row);
-
-
             });
             
         } catch(error){
@@ -263,15 +272,24 @@ document.addEventListener('DOMContentLoaded', ()=> {
 });
 
 // SEARCH INVENTORY LOGIC (Client-Side Filter)
-const searchInventoryBtn = document.getElementById('searchInventoryButton');
-const inventoryInput = document.getElementById('inventorySearchInput');
+const search_inventory_btn = document.getElementById('searchInventoryButton');
+    const inventory_search_input = document.getElementById('inventorySearchInput');
 
-searchInventoryBtn.addEventListener('click', () => {
-    const query = inventoryInput.value.toLowerCase();
-    const rows = document.querySelectorAll('#inventoryTableBody tr');
+    if(search_inventory_btn){
+        search_inventory_btn.addEventListener('click', () => {
+            const term = inventory_search_input.value.trim();
+            // Call fetchInventory with the search term
+            fetchInventory(term);
+        });
 
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(query) ? '' : 'none';
-    });
-});
+        // Auto-reset if input is cleared
+        inventory_search_input.addEventListener('keyup', (e) => {
+            if (e.target.value === '') {
+                // Fetch all inventory when search is cleared
+                fetchInventory();
+            }
+        });
+    }
+
+    // This line should already exist at the bottom
+    fetchInventory();

@@ -6,6 +6,7 @@ import setup_db as setup
 
 
 app = Flask(__name__)
+
 CORS(app)
 
 ##app.register_blueprint(users_bp, url_prefix='/api')
@@ -112,9 +113,13 @@ def create_inventory():
 
 @app.route('/api/inventory', methods=['GET'])
 def get_inventory():
-  
     try:
-        items = db.get_inventory()
+        # Get the search term from the URL query parameters
+        search_term = request.args.get('search')
+        
+        # Pass the term to the database function
+        items = db.get_inventory(search_term)
+        
         return jsonify(items)
 
     except Exception as e:

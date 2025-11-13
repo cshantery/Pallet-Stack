@@ -244,24 +244,35 @@ def insert_inventory(pallet_condition, size, inventory_count, price):
     finally:
         cursor.close()
 
+
 #read inventory 
-def get_inventory():
+def get_inventory(search_term=None):
     connection = get_db()
     cursor = connection.cursor(dictionary=True)
 
     try:
-        query = """ SELECT * FROM pallets ORDER BY pallet_id"""
-        cursor.execute(query)
+        values = []
+        query = "SELECT * FROM pallets"
+
+        # If a search term is provided, filter by condition OR size
+        if search_term:
+            query += " WHERE Pallet_Condition LIKE %s OR Size LIKE %s"
+            # Add wildcards for partial matching
+            search_like = f"%{search_term}%"
+            values.extend([search_like, search_like])
+
+        query += " ORDER BY pallet_id"
+        
+        cursor.execute(query, tuple(values))
         results = cursor.fetchall()
         return results
+        
     except Exception as e:
         print("Error fetching inventory", e)
         connection.rollback()
-        return False
+        return []  # Return empty list on error
     finally:
         cursor.close()
-   
-
 
 #update operation for inventory table
 def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_count= None, price= None):
