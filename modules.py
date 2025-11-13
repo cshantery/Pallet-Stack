@@ -7,13 +7,13 @@ from db import get_db
 
 
 #create invoice
-def insert_invoice(invoice_id, customer_id, order_id, order_price, invoice_status):
+def insert_invoice(customer_id, order_id, order_price, invoice_status):
     connection = get_db()
     cursor = connection.cursor()
    
     try:
-        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID, Order_Price, Invoice_Status) VALUES(%s,%s,%s,%s,%s) """
-        cursor.execute(query, (invoice_id, customer_id, order_id, order_price, invoice_status))
+        query =  """ INSERT INTO invoice (Customer_ID, Order_ID, Order_Price, Invoice_Status) VALUES(%s,%s,%s,%s) """
+        cursor.execute(query, ( customer_id, order_id, order_price, invoice_status))
         connection.commit()
         return True
     except Exception as e:

@@ -92,15 +92,7 @@ def create_tables(connection):
                 Pallet_ID INT,
                 Customer_ID INT,
                 Order_Date Date,
-                Quantity INT,
-                INDEX Pal_ID (Pallet_ID),
-                FOREIGN KEY (Pallet_ID)
-                    REFERENCES pallets(Pallet_ID)
-                    ON UPDATE RESTRICT,
-                INDEX O_Cust_ID (Customer_ID),
-                FOREIGN KEY (Customer_ID)
-                    REFERENCES customer(Customer_ID)
-                    ON UPDATE RESTRICT
+                Quantity INT
             )
             """,
             """
@@ -108,11 +100,7 @@ def create_tables(connection):
                 Shipment_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Order_ID INT,
                 Shipment_Date DATE,
-                Shipment_Status VARCHAR(25),
-                INDEX S_Ord_ID (Order_ID),
-                FOREIGN KEY (Order_ID)
-                    REFERENCES orders(Order_ID)
-                    ON UPDATE RESTRICT
+                Shipment_Status VARCHAR(25)
             )
             """,
             """
@@ -121,15 +109,7 @@ def create_tables(connection):
                 Customer_ID INT,
                 Order_ID INT,
                 Order_Price DOUBLE,
-                Invoice_Status CHAR(10),
-                INDEX I_Cust_ID (Customer_ID),
-                FOREIGN KEY (Customer_ID)
-                    REFERENCES customer(Customer_ID)
-                    ON UPDATE RESTRICT,
-                INDEX I_Ord_ID (Order_ID),
-                FOREIGN KEY (Order_ID)
-                    REFERENCES orders(Order_ID)
-                    ON UPDATE RESTRICT
+                Invoice_Status CHAR(25)
             )
             """
         ]
