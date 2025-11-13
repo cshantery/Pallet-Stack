@@ -169,3 +169,75 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
 
 });
+
+// 1. SEARCH BAR LOGIC
+const searchOrderBtn = document.getElementById('searchOrdersButton');
+const orderSearchInput = document.getElementById('orderSearchInput');
+
+searchOrderBtn.addEventListener('click', () => {
+    const query = orderSearchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('#orderTableBody tr');
+
+    rows.forEach(row => {
+        // Combine text from all cells in the row for broad search
+        const text = row.textContent.toLowerCase();
+        // Toggle visibility based on match
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+
+// 2. CREATE ORDER BUTTON LOGIC
+const createOrderBtn = document.getElementById('createOrderButton');
+
+const addOrderFormHTML = `
+    <form id="modal-form" class="modal-form">
+        <label for="order_id">Order ID:</label>
+        <input type="number" name="order_id" required>
+
+        <label for="pallet_id">Pallet ID:</label>
+        <input type="number" name="pallet_id" required>
+
+        <label for="customer_id">Customer ID:</label>
+        <input type="number" name="customer_id" required>
+
+        <label for="order_date">Date:</label>
+        <input type="date" name="order_date" required>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" required>
+        
+        <label for="lumber_price">Lumber Price:</label>
+        <input type="number" name="lumber_price" step="0.01">
+    </form>
+`;
+
+createOrderBtn.addEventListener('click', () => {
+    // Define what happens when user clicks "Confirm" in the modal
+    const submitAction = async () => {
+        const form = document.getElementById('modal-form');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch('/api/order', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                alert("Order Created!");
+                document.getElementById('universalModal').classList.remove('active');
+                // Refresh the page or re-fetch data here
+                location.reload(); 
+            } else {
+                alert("Failed to create order.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    // Note: You might need to expose openModal globally - Khai
+    openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
+});

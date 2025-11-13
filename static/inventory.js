@@ -261,3 +261,17 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
     fetchInventory();
 });
+
+// SEARCH INVENTORY LOGIC (Client-Side Filter)
+const searchInventoryBtn = document.getElementById('searchInventoryButton');
+const inventoryInput = document.getElementById('inventorySearchInput');
+
+searchInventoryBtn.addEventListener('click', () => {
+    const query = inventoryInput.value.toLowerCase();
+    const rows = document.querySelectorAll('#inventoryTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
