@@ -31,36 +31,6 @@
         </table>
     </section>
 
-    <div id="addInvoiceModal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Add New Invoice</h2>
-
-            <form id="addInvoiceForm">
-                <div class="form-group">
-                    <label for="customerID">Customer ID</label>
-                    <input type="number" id="customerID" name="customer_id" step="1" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="orderID">Order ID</label>
-                    <input type="number" id="orderID" name="order_id" step="1" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="orderPrice">Order Price</label>
-                    <input type="number" id="orderPrice" name="order_price" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="invoiceStatus">Invoice Status</label>
-                    <input type="text" id="invoiceStatus" name="invoice_status" required>
-                </div>
-
-                <button type="submit" class="sidebar-btn">Add to Invoice</button>
-            </form>
-        </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
