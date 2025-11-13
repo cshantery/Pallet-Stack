@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const pallet_table = document.getElementById('inventoryTableBody');
     const add_inventory_button = document.getElementById('addInventoryButton');
     const search_inventory_button = document.getElementById('searchInventoryButton');
-    const update_inventpry_button = document.getElementById('updateInventoryButton');
     const delete_inventory_button = document.getElementById('deleteInventoryButton');
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -24,6 +23,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
         const oldForm = document.getElementById('modal-form');
         if (oldForm) {
             oldForm.removeEventListener('submit', handleAddSubmit);
+            oldForm.removeEventListener('submit', submitUpdate)
         }
     };
 
@@ -65,7 +65,20 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     <td>${data.Price}</td>
                 `;
 
+
+                row.addEventListener('click', ()=>{
+                    const content = createViewDetailsHTML(data);
+                    openModal('Pallet Details', content, 'Close', closeModal);
+
+                    const editItemBtn = document.getElementById('editItemBtn');
+                    if(editItemBtn){
+                        editItemBtn.addEventListener('click', () => openEditModal(data));
+                    }
+                });
+
                 pallet_table.appendChild(row);
+
+
             });
             
         } catch(error){
@@ -81,7 +94,12 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const addInventoryFormHTML = `
         <form id = "modal-form" class="modal-form">
             <label for = "pallet_condition">Pallet Condition:</label>
-            <input type ="text" id = "pallet_Condition" name = "pallet_condition" required>
+            <select id = "pallet_condition" name = "pallet_condition" required>
+                <option value = "new">New Pallet</option>
+                <option value = "used">Used Pallet</option>
+                <option value = "combo">Combo Pallet</option>
+            </select>
+           
 
             <label for = "size">Size:</label>
             <input type = "text" id = "size" name = "size"required>
@@ -96,16 +114,53 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
     function createViewDetailsHTML(p){
         return `
+      
+
+            
             <div class = "item-details">
                 <p><strong>Pallet ID: </strong>${p.Pallet_ID}</p>
                 <p><strong>Pallet_Condition: </strong>${p.Pallet_Condition}</p>
                 <p><strong>Size: </strong>${p.Size}</p>
                 <p><strong>Inventory_Count: </strong>${p.Inventory_Count}</p>
-                <p><strong>Price: </strong>${p.Price.toFixed(2)}</p>
+                <p><strong>Price: </strong>${p.Price}</p>
+            <div/>
+
+
                     
         `
     }
     
+
+    function openEditModal(data){
+        const editFormHTML = `
+            <form id = "modal-form" class="modal-form" data-id = "${data.Pallet_ID}">
+                <label for = "pallet_condition">Pallet Condition:</label>
+                <select id = "pallet_condition" name = "pallet_condition" required>
+                    <option value = "new" ${data.Pallet_Condition === 'new' ? 'selected' : ''}>New Pallet</option>
+                    <option value = "used" ${data.Pallet_Condition === 'used' ? 'selected' : ''}>Used Pallet</option>
+                    <option value = "combo" ${data.Pallet_Condition === 'combo' ? 'selected' : ''}>Combo Pallet</option>
+                </select>
+           
+
+                <label for = "size">Size:</label>
+                <input type = "text" id = "size" name = "size" value = "${data.Size}"required>
+
+                <label for = "inventory_count">Inventory Count:</label>
+                <input type = "number" id = "inventory_count" name = "inventory_count" value = "value="${data.Inventory_Count}"" required>
+
+                <label for = "price">Price/Unit:</label>
+                <input type="text" id = "price" name = "price" value = "${data.Price}" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
+            </form>
+        `;
+
+        openModal('editInventoryForm', editFormHTML, 'Save Changes', () =>{
+            const editForm = document.getElementById('modal-form');
+            if(editForm) editForm.requestSubmit();
+        });
+
+        const editForm = document.getElementById('modal-form');
+        if(editForm) editForm.addEventListener('submit', submitUpdate);
+    }
 
 
   
@@ -131,7 +186,42 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
     });
 
-    const handleAddSubmit =  async(event) => {
+
+    const submitUpdate = async (event) => {
+        event.preventDefault();
+
+        const editForm = event.target;
+        const formData = new FormData(editForm);
+        const data = Object.fromEntries(formData.entries());
+        const palletID = editForm.dataset.id;
+
+        try{
+            const response = await fetch(`/api/inventory/${palletID}`, {
+                method: 'PUT',
+                headers: {'content-type' : 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if(response.ok){
+                console.log("update success", result.message);
+
+                
+                closeModal();
+                fetchInventory();
+            //editForm.reset();
+            } else {
+                console.error('error from server', result.error);
+                alert(`error: ${result.error}`);
+            }
+        } catch (error){
+            console.error('error', result.error);
+            alert(`error: ${result.error}`);
+        }
+    };
+
+    const handleAddSubmit =  async (event) => {
         event.preventDefault();
 
         const addForm = event.target;
@@ -166,7 +256,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
         }
     };
 
-    modalCloseBtn.addEventListener('click', closeModal);
+    //modalCloseBtn.addEventListener('click', closeModal);
     modalCancelBtn.addEventListener('click', closeModal);
 
     fetchInventory();

@@ -319,5 +319,23 @@ table[id$="Table"] tr:hover {
     border-radius: 4px;
 }
 
+.modal-form select{
+    
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    font-size: 1rem;
+    border-radius: 4px;
+}
 
+.item-details{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.item-details label{
+    font-weight: bold;
+    margin-bottom: -10px;
+}
 

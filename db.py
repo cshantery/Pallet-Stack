@@ -20,5 +20,5 @@ def get_db():
         
 
 if __name__ == "__main__":
-
+    create_connection()
     create_tables(get_db())

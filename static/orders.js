@@ -1,0 +1,171 @@
+document.addEventListener('DOMContentLoaded', ()=> {
+    const order_table = document.getElementById('orderTableBody');
+    const modal = document.getElementById('universalModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    let modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    let modalCancelBtn = document.getElementById('modalCancelBtn');
+    let modalCloseBtn = document.getElementById('modalCloseBtn');
+
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalBody.innerHTML = ''; // Clear the body to remove old forms
+        
+        // Find any form that was in the modal and remove its submit listener
+        const oldForm = document.getElementById('modal-form');
+        if (oldForm) {
+            oldForm.removeEventListener('submit', handleAddSubmit);
+            oldForm.removeEventListener('submit', submitUpdate);
+        }
+    };
+
+
+    function openModal(title, content, confirmText, confirmAction){
+        modalTitle.textContent = title;
+        modalBody.innerHTML = content;
+        const newConfirmBtn = modalConfirmBtn.cloneNode(true);
+
+        if (confirmText) {
+        newConfirmBtn.textContent = confirmText;
+        }
+
+        newConfirmBtn.addEventListener('click', confirmAction);
+        modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, modalConfirmBtn);
+        modalConfirmBtn = newConfirmBtn;
+
+
+
+        modal.classList.add('active');
+    }
+
+
+
+    async function fetchInventory(){
+
+        try{
+            const response = await fetch('/api/inventory');
+            const data = await response.json();
+            order_table.innerHTML = '';
+            data.forEach(data=> {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${data.Order_ID}</td>
+                    <td>${data.Pallet_ID}</td>
+                    <td>${data.Customer_ID}</td>
+                    <td>${data.Order_Date}</td>
+                    <td>${data.Quantity}</td>
+                `;
+
+
+                row.addEventListener('click', ()=>{
+                    const content = createViewDetailsHTML(data);
+                    openModal('Order Details', content, 'Close', closeModal);
+
+                    const editItemBtn = document.getElementById('editItemBtn');
+                    if(editItemBtn){
+                        editItemBtn.addEventListener('click', () => openEditModal(data));
+                    }
+                });
+
+                pallet_table.appendChild(row);
+
+
+            });
+            
+        } catch(error){
+            console.error('Error fetching data: ', error)
+        }
+    }
+    window.addEventListener('click', (event)=> {
+        if(event.target == modal){
+            closeModal();
+        }
+    });
+    
+    function createViewDetailsHTML(p){
+        return `
+      
+
+            
+            <div class = "item-details">
+                <p><strong>Order ID: </strong>${p.Order_ID}</p>
+                <p><strong>Pallet_ID: </strong>${p.Pallet_ID}</p>
+                <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
+                <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
+                <p><strong>Quantity: </strong>${p.Quantity}</p>
+            <div/>
+
+
+                    
+        `
+    }
+
+
+    function openEditModal(data){
+        const editFormHTML = `
+            <form id = "modal-form" class="modal-form" data-id = "${data.Order_ID}">
+
+                <label for = "pallet_id">Pallet ID:</label>
+                <input type = "text" id = "pallet_id" name = "pallet_id" value = "${data.Pallet_ID}"required>
+
+                <label for = "customer_id">Customer ID:</label>
+                <input type = "text" id = "customer_id" name = "customer_id" value = "${data.Customer_ID}"required>
+
+                <label for = "order_date">Order Date:</label>
+                <input type = "Date" id = "order_date" name = "order_date" value = "value="${data.Order_Date}"" required>
+
+                <label for = "qauntity">Quantity:</label>
+                <input type="num" id = "price" name = "price" value = "${data.Price}" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
+            </form>
+        `;
+
+        openModal('Edit Order Form', editFormHTML, 'Save Changes', () =>{
+            const editForm = document.getElementById('modal-form');
+            if(editForm) editForm.requestSubmit();
+        });
+
+        const editForm = document.getElementById('modal-form');
+        if(editForm) editForm.addEventListener('submit', submitUpdate);
+    }
+
+
+
+    const submitUpdate = async (event) => {
+        event.preventDefault();
+
+        const editForm = event.target;
+        const formData = new FormData(editForm);
+        const data = Object.fromEntries(formData.entries());
+        const orderID = editForm.dataset.id;
+
+        try{
+            const response = await fetch(`/api/orders/${orderID}`, {
+                method: 'PUT',
+                headers: {'content-type' : 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if(response.ok){
+                console.log("update success", result.message);
+
+                
+                closeModal();
+                fetchInventory();
+        
+            } else {
+                console.error('error from server', result.error);
+                alert(`error: ${result.error}`);
+            }
+        } catch (error){
+            console.error('error', result.error);
+            alert(`error: ${result.error}`);
+        }
+    };
+
+
+
+});

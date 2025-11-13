@@ -70,7 +70,7 @@ def create_tables(connection):
 
             """
             CREATE TABLE IF NOT EXISTS pallets (
-                Pallet_ID INT PRIMARY KEY AUTO_INCREMENT,
+                Pallet_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Pallet_Condition VARCHAR(25),
                 Size VARCHAR(25),
                 Inventory_Count INT,
@@ -79,52 +79,64 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS customer (
-                Customer_ID INT PRIMARY KEY AUTO_INCREMENT,
+                Customer_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Customer_Name VARCHAR(25),
                 Phone VARCHAR(25),
                 Address VARCHAR(25)
             )
             """,
-            """
-            CREATE TABLE IF NOT EXISTS supplier (
-                Supplier_ID INT PRIMARY KEY AUTO_INCREMENT,
-                Supplier_type VARCHAR(25),
-                Supplier_Name VARCHAR(25),
-                Supplier_Phone VARCHAR(25),
-                Lumber_Price DOUBLE
-            )
-            """,
+    
             """
             CREATE TABLE IF NOT EXISTS orders (
-                Order_ID INT PRIMARY KEY AUTO_INCREMENT,
-                Pallet_ID CHAR(6),
-                Lumber_Price DOUBLE,
-                Customer_ID CHAR(6),
-                Order_Date DATE,
-                Quantity INT
+                Order_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Pallet_ID INT,
+                Customer_ID INT,
+                Order_Date Date,
+                Quantity INT,
+                INDEX Pal_ID (Pallet_ID),
+                FOREIGN KEY (Pallet_ID)
+                    REFERENCES pallets(Pallet_ID)
+                    ON UPDATE RESTRICT,
+                INDEX O_Cust_ID (Customer_ID),
+                FOREIGN KEY (Customer_ID)
+                    REFERENCES customer(Customer_ID)
+                    ON UPDATE RESTRICT
             )
             """,
             """
             CREATE TABLE IF NOT EXISTS shipments (
-                Shipment_ID INT PRIMARY KEY AUTO_INCREMENT,
-                Order_ID CHAR(6),
+                Shipment_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Order_ID INT,
                 Shipment_Date DATE,
-                Shipment_Status VARCHAR(25)
+                Shipment_Status VARCHAR(25),
+                INDEX S_Ord_ID (Order_ID),
+                FOREIGN KEY (Order_ID)
+                    REFERENCES orders(Order_ID)
+                    ON UPDATE RESTRICT
             )
             """,
             """
             CREATE TABLE IF NOT EXISTS invoice (
-                Invoice_ID INT PRIMARY KEY AUTO_INCREMENT,
-                Customer_ID VARCHAR(6),
-                Order_ID VARCHAR(6),
+                Invoice_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+                Customer_ID INT,
+                Order_ID INT,
                 Order_Price DOUBLE,
-                Invoice_Status CHAR(10)
+                Invoice_Status CHAR(10),
+                INDEX I_Cust_ID (Customer_ID),
+                FOREIGN KEY (Customer_ID)
+                    REFERENCES customer(Customer_ID)
+                    ON UPDATE RESTRICT,
+                INDEX I_Ord_ID (Order_ID),
+                FOREIGN KEY (Order_ID)
+                    REFERENCES orders(Order_ID)
+                    ON UPDATE RESTRICT
             )
             """
         ]
 
         for table in tables:
             cursor.execute(table)
+        connection.commit()
         print(" Tables created successfully!")
     except Error as e:
         print(" Table creation failed:", e)

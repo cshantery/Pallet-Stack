@@ -128,7 +128,7 @@ def get_inventory():
 
 @app.route('/api/inventory/<pallet_id>', methods=['DELETE'])
 def delete_inventory(pallet_id):
-    complete = modules.delete_inventory(pallet_id)
+    complete = db.delete_inventory(pallet_id)
     if complete:
         return jsonify({"message": f"inventory {pallet_id} deleted"}), 200
     else:
@@ -145,7 +145,7 @@ def update_inventory(pallet_id):
     inventory_count = data.get('inventory_count')
     price = data.get('price')
 
-    complete = modules.update_inventory(pallet_id, pallet_condition, size, inventory_count, price)
+    complete = db.update_inventory(pallet_id, pallet_condition, size, inventory_count, price)
     if complete:
         return jsonify({"message" : "inventory update complete"}), 200
     else:

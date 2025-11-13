@@ -293,7 +293,7 @@ def update_inventory(pallet_id, pallet_condition=None, size= None, inventory_cou
             return False
 
         values.append(pallet_id)
-        query = f"""UPDATE Inevntory SET {', '.join(updates)} WHERE Pallet_ID = %s"""
+        query = f"""UPDATE pallets SET {', '.join(updates)} WHERE Pallet_ID = %s"""
         cursor.execute(query, tuple(values))
         connection.commit()
 
