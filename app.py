@@ -53,13 +53,12 @@ def get_invoice():
 @app.route('/api/invoices', methods=['POST'])
 def create_invoices():
     data = request.get_json()
-    invoice_id = data.get('invoice_id')
     customer_id = data.get('customer_id')
     order_id = data.get('order_id')
     order_price = data.get('order_price')
     invoice_status = data.get('invoice_status')
 
-    complete = db.insert_invoice(invoice_id, customer_id, order_id, order_price, invoice_status)
+    complete = db.insert_invoice(customer_id, order_id, order_price, invoice_status)
     if complete:
         return jsonify({"message" : "Invoice successfully created"}), 201
     else:

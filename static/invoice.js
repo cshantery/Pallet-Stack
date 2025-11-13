@@ -63,24 +63,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     }
     window.addEventListener('click', (event)=> {
-        if(event.target == invoice_form){
-            closeModal;
+        if(event.target == modal){
+            closeModal();
         }
     });
 
     const addInvoiceFormHTML = `
         <form id="modal-form" class="modal-form">
-                <label for="customerID">Customer ID</label>
-                <input type="number" id="customerID" name="customer_id" step="1" required>
+                <label for="customer_id">Customer ID</label>
+                <input type="number" id="customer_id" name="customer_id" step="1" required>
             
-                <label for="orderID">Order ID</label>
-                <input type="number" id="orderID" name="order_id" step="1" required>
+                <label for="order_id">Order ID</label>
+                <input type="number" id="order_id" name="order_id" step="1" required>
 
-                <label for="orderPrice">Order Price</label>
-                <input type="number" id="orderPrice" name="order_price" required>
+                <label for="order_price">Order Price</label>
+                <input type="number" id="order_price" name="order_price" required>
 
-                <label for="invoiceStatus">Invoice Status</label>
-                <input type="text" id="invoiceStatus" name="invoice_status" required>
+                <label for="invoice_status">Invoice Status</label>
+                <input type="text" id="invoice_status" name="invoice_status" required>
         </form>
     `;
 
@@ -144,11 +144,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 fetchInvoice();
                 addForm.reset();
             } else {
-                console.error('Error from server', result.error);
+                console.error('error from server', result.error);
                 alert(`error: ${result.error}`);
             }
         } catch (error){
-            console.error('Error', result.error);
+            console.error('error', result.error);
             alert(`error: ${result.error}`);
         }
     };
