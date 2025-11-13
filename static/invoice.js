@@ -1,22 +1,44 @@
 document.addEventListener('DOMContentLoaded', ()=>{
     const invoice_table = document.getElementById('invoiceTableBody');
     const add_invoice_button = document.getElementById('AddInvoiceButton');
-    const search_invoice = document.getElementById('searchInvoiceButton');
-    const print_invoice = document.getElementById('printInvoiceButton');
-    const invoice_form = document.getElementById('addInvoiceModal');
-    const closeBtn = document.querySelector('.close-button');
-    const addForm = document.getElementById('addInvoiceForm');
+    const search_invoice_button = document.getElementById('searchInvoiceButton');
+    const print_invoice_button = document.getElementById('printInvoiceButton');
+    const modal = document.getElementById('universalModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    let modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    let modalCancelBtn = document.getElementById('modalCancelBtn');
+    let modalCloseBtn = document.getElementById('modalCloseBtn');
 
-    function openModal(){
-        invoice_form.style.display = 'flex';
+    function openModal(title, content, confirmText, confirmAction){
+        modalTitle.textContent = title;
+        modalBody.innerHTML = content;
+        const newConfirmBtn = modalConfirmBtn.cloneNode(true);
+
+        if (confirmText) {
+        newConfirmBtn.textContent = confirmText;
+        }
+
+        newConfirmBtn.addEventListener('click', confirmAction);
+        modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, modalConfirmBtn);
+        modalConfirmBtn = newConfirmBtn;
+
+
+
+        modal.classList.add('active');
     }
 
-    function closeModal(){
-        invoice_form.style.display = 'none';
-    }
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalBody.innerHTML = ''; // Clear the body to remove old forms
+        
+        // Find any form that was in the modal and remove its submit listener
+        const oldForm = document.getElementById('modal-form');
+        if (oldForm) {
+            oldForm.removeEventListener('submit', handleAddSubmit);
+        }
+    };
 
-    add_invoice_button.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
     
     async function fetchInvoice() {
         try{
@@ -46,37 +68,93 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     });
 
-    addForm.addEventListener('submit', async (event)=>{
+    const addInvoiceFormHTML = `
+        <form id="modal-form" class="modal-form">
+                <label for="customerID">Customer ID</label>
+                <input type="number" id="customerID" name="customer_id" step="1" required>
+            
+                <label for="orderID">Order ID</label>
+                <input type="number" id="orderID" name="order_id" step="1" required>
+
+                <label for="orderPrice">Order Price</label>
+                <input type="number" id="orderPrice" name="order_price" required>
+
+                <label for="invoiceStatus">Invoice Status</label>
+                <input type="text" id="invoiceStatus" name="invoice_status" required>
+        </form>
+    `;
+
+    function createViewDetailsHTML(p){
+        return `
+            <div class = "item-details">
+                <p><strong>Invoice ID: </strong>${p.Invoice_ID}</p>
+                <p><strong>Customer ID: </strong>${p.Customer_ID}</p>
+                <p><strong>Order ID: </strong>${p.Order_ID}</p>
+                <p><strong>Order_Price: </strong>${p.Order_Price}</p>
+                <p><strong>Status: </strong>${p.Invoice_Status}</p>
+                    
+        `
+    }
+
+    add_invoice_button.addEventListener('click', () => {
+        const addAction = () => {
+            const addForm = document.getElementById('modal-form');
+            if(addForm){
+                addForm.requestSubmit();
+            }
+        };
+
+        openModal(
+            ' Add New Invoice Item',
+            addInvoiceFormHTML,
+            null,
+            addAction
+        );
+
+        const addForm = document.getElementById('modal-form');
+        if (addForm) {
+            addForm.addEventListener('submit', handleAddSubmit);
+        }
+
+    });
+
+    const handleAddSubmit =  async(event) => {
         event.preventDefault();
 
+        const addForm = event.target;
         const formData = new FormData(addForm);
         const data = Object.fromEntries(formData.entries());
 
-        console.log('Form being sent: ', data);
+        console.log("sending form.");
 
         try{
-            const response = await fetch('/api/invoices',{
+            const response = await fetch('/api/invoices', {
                 method: 'POST',
-                headers: {'Content-Type' : 'application/json'},
+                headers: {'content-type' : 'application/json'},
                 body: JSON.stringify(data)
             });
 
             const result = await response.json();
 
             if(response.ok){
-                console.log('Success', result.message);
+                console.log("success", result.message);
 
+                
                 closeModal();
                 fetchInvoice();
-            }else{
-                console.error('Error from server:', result.error);
-                alert(`Error: ${result.error}`); 
+                addForm.reset();
+            } else {
+                console.error('Error from server', result.error);
+                alert(`error: ${result.error}`);
             }
-        }catch(error){
+        } catch (error){
             console.error('Error', result.error);
-            alert('Error: ${result.error}');
+            alert(`error: ${result.error}`);
         }
-    });
+    };
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modalCancelBtn.addEventListener('click', closeModal);
 
     fetchInvoice();
 });
