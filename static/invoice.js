@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', ()=>{
     const invoice_table = document.getElementById('invoiceTableBody');
     const add_invoice_button = document.getElementById('AddInvoiceButton');
-    const search_invoice_button = document.getElementById('searchInvoiceButton');
+    const search_invoice_button = document.getElementById('searchInvoicesButton');
+    const search_input = document.getElementById('invoiceSearchInput');
+    const search_type = document.getElementById('invoiceSearchType');
     const print_invoice_button = document.getElementById('printInvoiceButton');
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -40,9 +42,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
     };
 
     
-    async function fetchInvoice() {
+    async function fetchInvoice(params = null) {
         try{
-            const response = await fetch('/api/invoice');
+            let url = '/api/invoices';
+
+            if (params) {
+                const queryString = new URLSearchParams(params).toString();
+                url += `?${queryString}`;
+            }
+
+            const response = await fetch(url);
             const data = await response.json();
             invoice_table.innerHTML = '';
             data.forEach(data=> {
@@ -153,8 +162,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     };
 
-    modalCloseBtn.addEventListener('click', closeModal);
+    //modalCloseBtn.addEventListener('click', closeModal);
     modalCancelBtn.addEventListener('click', closeModal);
+
+    search_invoice_button.addEventListener("click", () => {
+        const query = search_input.value.trim();
+        
+        let params = {}
+
+        if (search_type.value === "invoice" &&  query !== '') params.invoice_id = query;
+        if (search_type.value === "customer"  &&  query !== '') params.customer_id = query;
+        if (search_type.value === "order"  &&  query !== '') params.order_id = query;
+        
+        fetchInvoice(params);
+    });
 
     fetchInvoice();
 });
