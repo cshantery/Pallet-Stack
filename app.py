@@ -13,7 +13,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('index.html')
 
 @app.route('/invoices')
 def invoices():
@@ -125,9 +125,6 @@ def get_inventory():
     except Exception as e:
         print(f"Error in GET /api/inventory: {e}")
         return jsonify({"error": "Failed to fetch inventory"}), 500
-
-
-
 
 
 @app.route('/api/inventory/<pallet_id>', methods=['DELETE'])

@@ -40,6 +40,10 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
             query += " AND Order_ID = %s"
             values.append(order_id)
 
+        if customer_id != None:
+            query += " AND Customer_ID = %s"
+            values.append(customer_id)
+
         cursor.execute(query, tuple(values))
         results = cursor.fetchall()
         return results
