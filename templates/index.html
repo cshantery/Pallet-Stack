@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Pallet Stack Home{% endblock %}
+
+{% block content %}
+<div class="home-dashboard">
+
+   
+    <h1 class="centered-text">Pallet Stack</h1>
+        
+    <div class="home-buttons">
+         <a href="{{ url_for('orders') }}" class="home-btn">Manage Orders</a>
+         <a href="{{ url_for('inventory') }}" class="home-btn">Manage Inventory</a>
+         <a href="{{ url_for('invoices') }}" class="home-btn">Manage Invoices</a>
+    </div>
+
+</div>
+{% endblock %}
+
