@@ -198,7 +198,7 @@ def update_order(order_id):
     order_date = data.get('order_date')
     quantity = data.get('quantity')
 
-    complete = modules.update_order(order_id, pallet_id, lumber_price, customer_id, order_date, quantity)
+    complete = modules.update_order(pallet_id, lumber_price, customer_id, order_date, quantity)
     if complete:
         return jsonify({"message" : "order update complete"}), 200
     else:
