@@ -193,7 +193,7 @@ def update_order(order_id):
     order_date = data.get('order_date')
     quantity = data.get('quantity')
 
-    complete = modules.update_order(order_id, pallet_id, lumber_price, customer_id, order_date, quantity)
+    complete = db.update_order(order_id, pallet_id, lumber_price, customer_id, order_date, quantity)
     if complete:
         return jsonify({"message" : "order update complete"}), 200
     else:
@@ -204,7 +204,7 @@ def update_order(order_id):
 
 @app.route('/api/order/<order_id>', methods=['DELETE'])
 def delete_order(order_id):
-    complete = modules.delete_order(order_id)
+    complete = db.delete_order(order_id)
     if complete:
         return jsonify({"message": f"order {order_id} deleted"}), 200
     else:

@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <p><strong>Order ID: </strong>${p.Order_ID}</p>
                 <p><strong>Pallet_ID: </strong>${p.Pallet_ID}</p>
                 <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
-                <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
+                <p><strong>Order_Date: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
             <div/>
 
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <input type = "Date" id = "order_date" name = "order_date" value = "value="${data.Order_Date}"" required>
 
                 <label for = "qauntity">Quantity:</label>
-                <input type="num" id = "price" name = "price" value = "${data.Price}" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
+                <input type="num" id = "quantity" name = "quantity" value = "${data.Quantity}" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
             </form>
         `;
 
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
         const orderID = editForm.dataset.id;
 
         try{
-            const response = await fetch(`/api/orders/${orderID}`, {
+            const response = await fetch(`/api/order/${orderID}`, {
                 method: 'PUT',
                 headers: {'content-type' : 'application/json'},
                 body: JSON.stringify(data)
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 
                 closeModal();
-                fetchInventory();
+                fetchOrder();
         
             } else {
                 console.error('error from server', result.error);
