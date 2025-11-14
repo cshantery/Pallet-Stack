@@ -158,14 +158,12 @@ def update_inventory(pallet_id):
 @app.route('/api/order', methods=['POST'])
 def create_order():
     data = request.get_json()
-    order_id = data.get('order_id')
     pallet_id = data.get('pallet_id')
-    lumber_price = data.get('lumber_price')
     customer_id = data.get('customer_id')
     order_date = data.get('order_date')
     quantity = data.get('quantity')
 
-    complete = modules.insert_order(order_id, pallet_id, lumber_price, customer_id, order_date, quantity)
+    complete = db.insert_order(pallet_id, customer_id, order_date, quantity)
     if complete:
         return jsonify({"message" : "Order successfully created"}), 201 
     else: 
@@ -180,7 +178,7 @@ def search_order():
     pallet_id = request.args.get('pallet_id')
     customer_id = request.args.get('customer_id')
     
-    results = modules.view_orders(order_id, pallet_id, customer_id)
+    results = db.view_orders(order_id, pallet_id, customer_id)
     return jsonify(results), 200
 
 

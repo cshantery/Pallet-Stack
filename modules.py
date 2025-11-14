@@ -118,14 +118,14 @@ def delete_invoice(invoice_id):
 
 
 #create order
-def insert_order(order_id, pallet_id, customer_id, lumber_price, date, quantity):
+def insert_order(pallet_id, customer_id, date, quantity):
     connection = get_db()
     cursor = connection.cursor()
 
     try:
-        query = """INSERT INTO orders (Order_ID, Pallet_ID, Lumber_Price, Customer_ID, Order_Date, Quantity) 
-        VALUES (%s,%s,%s,%s,%s,%s,)"""
-        cursor.execute(query, (order_id, pallet_id, customer_id, lumber_price, date, quantity))
+        query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity) 
+        VALUES (%s,%s,%s,%s)"""
+        cursor.execute(query, (pallet_id, customer_id, date, quantity))
         connection.commit()
         return True
     except Exception as e:

@@ -41,10 +41,10 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
 
 
-    async function fetchInventory(){
+    async function fetchOrder(){
 
         try{
-            const response = await fetch('/api/inventory');
+            const response = await fetch('/api/order');
             const data = await response.json();
             order_table.innerHTML = '';
             data.forEach(data=> {
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     }
                 });
 
-                pallet_table.appendChild(row);
+                order_table.appendChild(row);
 
 
             });
@@ -166,10 +166,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
         }
     };
 
-
-
-});
-
 // 1. SEARCH BAR LOGIC
 const searchOrderBtn = document.getElementById('searchOrdersButton');
 const orderSearchInput = document.getElementById('orderSearchInput');
@@ -191,8 +187,6 @@ const createOrderBtn = document.getElementById('createOrderButton');
 
 const addOrderFormHTML = `
     <form id="modal-form" class="modal-form">
-        <label for="order_id">Order ID:</label>
-        <input type="number" name="order_id" required>
 
         <label for="pallet_id">Pallet ID:</label>
         <input type="number" name="pallet_id" required>
@@ -205,11 +199,44 @@ const addOrderFormHTML = `
 
         <label for="quantity">Quantity:</label>
         <input type="number" name="quantity" required>
-        
-        <label for="lumber_price">Lumber Price:</label>
-        <input type="number" name="lumber_price" step="0.01">
+
     </form>
 `;
+
+const handleAddSubmit =  async (event) => {
+        event.preventDefault();
+
+        const addForm = event.target;
+        const formData = new FormData(addForm);
+        const data = Object.fromEntries(formData.entries());
+
+        console.log("sending form.");
+
+        try{
+            const response = await fetch('/api/order', {
+                method: 'POST',
+                headers: {'content-type' : 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if(response.ok){
+                console.log("success", result.message);
+
+                
+                closeModal();
+                fetchOrder();
+                addForm.reset();
+            } else {
+                console.error('Error from server', result.error);
+                alert(`error: ${result.error}`);
+            }
+        } catch (error){
+            console.error('Error', result.error);
+            alert(`error: ${result.error}`);
+        }
+    };
 
 createOrderBtn.addEventListener('click', () => {
     // Define what happens when user clicks "Confirm" in the modal
@@ -226,7 +253,6 @@ createOrderBtn.addEventListener('click', () => {
             });
             
             if (response.ok) {
-                alert("Order Created!");
                 document.getElementById('universalModal').classList.remove('active');
                 // Refresh the page or re-fetch data here
                 location.reload(); 
@@ -240,4 +266,11 @@ createOrderBtn.addEventListener('click', () => {
 
     // Note: You might need to expose openModal globally - Khai
     openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
+
 });
+    modalCancelBtn.addEventListener('click', closeModal);
+
+    fetchOrder();
+
+});
+
