@@ -336,7 +336,7 @@ def delete_inventory(pallet_id):
     cursor = connection.cursor()
 
     try:
-        query = "DELETE FROM pallets WHERE pallet_id = %s"
+        query = "DELETE FROM inventory WHERE Pallet_ID = %s"
         cursor.execute(query, (pallet_id,))
         connection.commit()
 

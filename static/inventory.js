@@ -87,14 +87,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     if(editItemBtn){
                         editItemBtn.addEventListener('click', () => openEditModal(data));
                     }
-                    
-                    const deleteItemBtn = document.getElementById('deleteItemBtn');
-                    if (deleteItemBtn) {
-                        deleteItemBtn.addEventListener('click', () => {
-                            deleteInventoryItem(data.Pallet_ID);
-      });
-    }
-});
+                });
 
                 pallet_table.appendChild(row);
 
@@ -105,29 +98,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
             console.error('Error fetching data: ', error)
         }
     }
-
-    async function deleteInventoryItem(palletID) {
-        try {
-            const response = await fetch(`/api/inventory/${palletID}`, {
-                method: 'DELETE',
-                headers: { 'content-type': 'application/json' }
-            });
-            const result = await response.json();
-            if (response.ok) {
-                console.log("Delete success", result.message);
-                closeModal();
-                fetchInventory();
-            } 
-            else {
-                console.error("Error from server", result.message);
-                alert(`Error: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error deleting", error);
-            alert("Error");
-  }
-}
-
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
             closeModal();
