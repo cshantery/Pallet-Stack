@@ -56,7 +56,7 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
 
     
 #update operation for invoice table
-def update_invoice(invoice_id, customer_id = None, order_id = None, order_price = None):
+def update_invoice(invoice_id, customer_id = None, order_id = None, order_price = None, invoice_status = None):
     connection = get_db()
     cursor = connection.cursor()
 
@@ -75,6 +75,10 @@ def update_invoice(invoice_id, customer_id = None, order_id = None, order_price 
         if order_price != None:
             updates.append("Order_Price = %s")
             values.append(order_price)
+
+        if order_price != None:
+            updates.append("Invoice_Status = %s")
+            values.append(invoice_status)
 
         if not updates:
             return False
@@ -142,7 +146,16 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        query = "SELECT * FROM orders WHERE 1=1"
+        query =  """
+            SELECT 
+                Order_ID,
+                Pallet_ID,
+                Customer_ID,
+                DATE_FORMAT(Order_Date, '%Y-%m-%d') AS Order_Date,
+                Quantity
+            FROM orders
+            WHERE 1=1
+        """
         values =[]
 
         if order_id != None:
@@ -166,7 +179,7 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
 
 
 #Update orders table
-def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= None, order_date= None, quantity= None ):
+def update_order(order_id, pallet_id= None, customer_id= None, order_date= None, quantity= None ):
     connection = get_db()
     cursor = connection.cursor()
 
@@ -178,10 +191,6 @@ def update_order(order_id, pallet_id= None, lumber_price= None, customer_id= Non
             updates.append("Pallet_ID = %s")
             values.append(pallet_id)
 
-        if lumber_price != None:
-            updates.append("Lumber_Price = %s")
-            values.append(lumber_price)
-        
         if customer_id != None: 
             updates.append("Customer_ID = %s")
             values.append(customer_id)

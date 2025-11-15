@@ -11,15 +11,21 @@ document.addEventListener('DOMContentLoaded', ()=>{
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
     let modalCloseBtn = document.getElementById('modalCloseBtn');
+    const headerActions = document.getElementById('modalHeaderActions');
 
     function openModal(title, content, confirmText, confirmAction){
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
+        
         const newConfirmBtn = modalConfirmBtn.cloneNode(true);
+
+
+       
 
         if (confirmText) {
         newConfirmBtn.textContent = confirmText;
         }
+
 
         newConfirmBtn.addEventListener('click', confirmAction);
         modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, modalConfirmBtn);
@@ -65,8 +71,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     <td>${data.Invoice_Status}</td>
                 `;
                 
+
+                row.addEventListener('click', ()=>{
+                    const content = createViewDetailsHTML(data);
+                    openModal('Invoice Details', content, "Edit", () => {
+                        openEditInvoiceModal(data);});
+                    
+               
+                });
+
                 invoice_table.appendChild(row);
             });
+
+
         } catch(error){
             console.error('Error fetching data: ', error)
         }
@@ -77,7 +94,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     });
 
-    const addInvoiceFormHTML = `
+    const addInvoiceFormHTML =
+         `
         <form id="modal-form" class="modal-form">
                 <label for="customer_id">Customer ID</label>
                 <input type="number" id="customer_id" name="customer_id" step="1" required>
@@ -89,9 +107,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 <input type="number" id="order_price" name="order_price" required>
 
                 <label for="invoice_status">Invoice Status</label>
-                <input type="text" id="invoice_status" name="invoice_status" required>
+                <select id = "invoice_status" name = "invoice_status" required>
+                    <option value = "outstanding" }>Outstanding</option>
+                    <option value = "paid" }>Paid</option>
         </form>
     `;
+
 
     function createViewDetailsHTML(p){
         return `
@@ -162,6 +183,37 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     };
 
+
+
+    function openEditInvoiceModal(data){
+        const editInvoiceFormHTML = `
+            <form id = "modal-form" class="modal-form" data-id = "${data.Invoice_ID}">
+
+                <label for = "customer_id">Customer ID:</label>
+                <input type = "text" id = "customer_id" name = "customer_id" value = "${data.Customer_ID}"required>
+
+                <label for = "pallet_id">Pallet ID:</label>
+                <input type = "text" id = "pallet_id" name = "pallet_id" value = "${data.Pallet_ID}"required>
+
+                <label for = "order_price">Order Price:</label>
+                <input type = "number" id = "order_price" name = "order_price" value = "${data.Order_Price}" required>
+
+                <label for = "status">Status:</label>
+                <select id = "invoice_status" name = "invoice_status" required>
+                    <option value = "outstanding" ${data.Invoice_Status === 'outstanding' ? 'selected' : ''}>Outstanding</option>
+                    <option value = "paid" ${data.Invoice_Status === 'paid' ? 'selected' : ''}>Paid</option>
+            </form>
+        `;
+
+        openModal('Edit Invoice Form', editInvoiceFormHTML, 'Save Changes', () =>{
+            const editInvoiceForm = document.getElementById('modal-form');
+            if(editInvoiceForm) editInvoiceForm.requestSubmit();
+        });
+
+        const editInvoiceForm = document.getElementById('modal-form');
+        if(editInvoiceForm) editInvoiceForm.addEventListener('submit', submitInvoiceUpdate);
+    }
+
     //modalCloseBtn.addEventListener('click', closeModal);
     modalCancelBtn.addEventListener('click', closeModal);
 
@@ -177,5 +229,41 @@ document.addEventListener('DOMContentLoaded', ()=>{
         fetchInvoice(params);
     });
 
+
+
+
+    const submitInvoiceUpdate = async (event) => {
+        event.preventDefault();
+
+        const editForm = event.target;
+        const formData = new FormData(editForm);
+        const data = Object.fromEntries(formData.entries());
+        const invoiceID = editForm.dataset.id;
+
+        try{
+            const response = await fetch(`/api/invoices/${invoiceID}`, {
+                method: 'PUT',
+                headers: {'content-type' : 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if(response.ok){
+                console.log("update success", result.message);
+
+                
+                closeModal();
+                fetchInvoice();
+            //editForm.reset();
+            } else {
+                console.error('error from server', result.error);
+                alert(`error: ${result.error}`);
+            }
+        } catch (error){
+            console.error('error', result.error);
+            alert(`error: ${result.error}`);
+        }
+    };
     fetchInvoice();
 });

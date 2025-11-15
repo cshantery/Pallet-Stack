@@ -114,10 +114,10 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <input type = "text" id = "customer_id" name = "customer_id" value = "${data.Customer_ID}"required>
 
                 <label for = "order_date">Order Date:</label>
-                <input type = "Date" id = "order_date" name = "order_date" value = "value="${data.Order_Date}"" required>
+                <input type = "Date" id = "order_date" name = "order_date" value = "${data.Order_Date}" required>
 
-                <label for = "qauntity">Quantity:</label>
-                <input type="num" id = "price" name = "price" value = "${data.Price}" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
+                <label for = "quantity">Quantity:</label>
+                <input type = "number" id = "quantity" name = "quantity" value = "${data.Quantity}" required>
             </form>
         `;
 
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
         const orderID = editForm.dataset.id;
 
         try{
-            const response = await fetch(`/api/orders/${orderID}`, {
+            const response = await fetch(`/api/order/${orderID}`, {
                 method: 'PUT',
                 headers: {'content-type' : 'application/json'},
                 body: JSON.stringify(data)
@@ -189,16 +189,16 @@ const addOrderFormHTML = `
     <form id="modal-form" class="modal-form">
 
         <label for="pallet_id">Pallet ID:</label>
-        <input type="number" name="pallet_id" required>
+        <input type="number" id = "pallet_id" name="pallet_id" required>
 
         <label for="customer_id">Customer ID:</label>
-        <input type="number" name="customer_id" required>
+        <input type="number" id = "customer_id" name="customer_id" required>
 
         <label for="order_date">Date:</label>
-        <input type="date" name="order_date" required>
+        <input type="date" id = "order_date" name="order_date" required>
 
         <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" required>
+        <input type="number"    id = "quantity" name="quantity" required>
 
     </form>
 `;

@@ -74,8 +74,9 @@ def update_invoices(invoice_id):
     customer_id = data.get('customer_id')
     order_id = data.get('order_id')
     order_price = data.get('order_price')
+    invoice_status = data.get('invoice_status')
 
-    complete = db.update_invoice(invoice_id, customer_id, order_id, order_price)
+    complete = db.update_invoice(invoice_id, customer_id, order_id, order_price, invoice_status)
     if complete:
         return jsonify({"message" : "invoice update complete"}), 200
     else:
@@ -187,13 +188,13 @@ def search_order():
 @app.route('/api/order/<order_id>', methods=['PUT'])
 def update_order(order_id):
     data = request.get_json()
+    
     pallet_id = data.get('pallet_id')
-    lumber_price = data.get('lumber_price')
     customer_id = data.get('customer_id')
     order_date = data.get('order_date')
     quantity = data.get('quantity')
 
-    complete = modules.update_order(pallet_id, lumber_price, customer_id, order_date, quantity)
+    complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity)
     if complete:
         return jsonify({"message" : "order update complete"}), 200
     else:
