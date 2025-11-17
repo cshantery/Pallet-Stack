@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <p><strong>Order ID: </strong>${p.Order_ID}</p>
                 <p><strong>Pallet_ID: </strong>${p.Pallet_ID}</p>
                 <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
-                <p><strong>Order_Date: </strong>${p.Order_Date}</p>
+                <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
             <div/>
 
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 
                 closeModal();
-                fetchOrder();
+                fetchInventory();
         
             } else {
                 console.error('error from server', result.error);
