@@ -81,12 +81,8 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 row.addEventListener('click', ()=>{
                     const content = createViewDetailsHTML(data);
-                    openModal('Pallet Details', content, 'Close', closeModal);
+                    openModal('Pallet Details', content, 'Edit', () => openEditModal(data));
 
-                    const editItemBtn = document.getElementById('editItemBtn');
-                    if(editItemBtn){
-                        editItemBtn.addEventListener('click', () => openEditModal(data));
-                    }
                 });
 
                 pallet_table.appendChild(row);
@@ -166,7 +162,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
             </form>
         `;
 
-        openModal('editInventoryForm', editFormHTML, 'Save Changes', () =>{
+        openModal('Edit Inventory Form', editFormHTML, 'Save Changes', () =>{
             const editForm = document.getElementById('modal-form');
             if(editForm) editForm.requestSubmit();
         });

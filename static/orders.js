@@ -61,12 +61,8 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 row.addEventListener('click', ()=>{
                     const content = createViewDetailsHTML(data);
-                    openModal('Order Details', content, 'Close', closeModal);
+                    openModal('Order Details', content, 'Edit', () => openEditModal(data));
 
-                    const editItemBtn = document.getElementById('editItemBtn');
-                    if(editItemBtn){
-                        editItemBtn.addEventListener('click', () => openEditModal(data));
-                    }
                 });
 
                 order_table.appendChild(row);
@@ -78,6 +74,8 @@ document.addEventListener('DOMContentLoaded', ()=> {
             console.error('Error fetching data: ', error)
         }
     }
+
+
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
             closeModal();
@@ -99,7 +97,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
 
                     
-        `
+        `;
     }
 
 
@@ -121,7 +119,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
             </form>
         `;
 
-        openModal('Edit Order Form', editFormHTML, 'Save Changes', () =>{
+        openModal(' Edit Order Form', editFormHTML, 'Save Changes', () =>{
             const editForm = document.getElementById('modal-form');
             if(editForm) editForm.requestSubmit();
         });
