@@ -40,44 +40,58 @@ document.addEventListener('DOMContentLoaded', ()=> {
     }
 
 
+async function fetchOrders(params = null){
+    
+    let url = '/api/order'; // Base URL
 
-    async function fetchOrder(){
-
-        try{
-            const response = await fetch('/api/order');
-            const data = await response.json();
-            order_table.innerHTML = '';
-            data.forEach(data=> {
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>${data.Order_ID}</td>
-                    <td>${data.Pallet_ID}</td>
-                    <td>${data.Customer_ID}</td>
-                    <td>${data.Order_Date}</td>
-                    <td>${data.Quantity}</td>
-                `;
-
-
-                row.addEventListener('click', ()=>{
-                    const content = createViewDetailsHTML(data);
-                    openModal('Order Details', content, 'Close', closeModal);
-
-                    const editItemBtn = document.getElementById('editItemBtn');
-                    if(editItemBtn){
-                        editItemBtn.addEventListener('click', () => openEditModal(data));
-                    }
-                });
-
-                order_table.appendChild(row);
-
-
-            });
-            
-        } catch(error){
-            console.error('Error fetching data: ', error)
+    // NEW: If params are provided, build a query string
+    if (params) {
+        const queryString = new URLSearchParams(params).toString();
+        if (queryString) {
+            url += `?${queryString}`;
         }
     }
+
+    try{
+        const response = await fetch(url); // Fetch from the new URL
+        const data = await response.json();
+        order_table.innerHTML = '';
+
+        // NEW: Handle empty results
+        if (data.length === 0) {
+            order_table.innerHTML = '<tr><td colspan="5">No orders found.</td></tr>';
+            return;
+        }
+
+        data.forEach(data=> {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${data.Order_ID}</td>
+                <td>${data.Pallet_ID}</td>
+                <td>${data.Customer_ID}</td>
+                <td>${data.Order_Date}</td>
+                <td>${data.Quantity}</td>
+            `;
+
+            row.addEventListener('click', ()=>{
+                const content = createViewDetailsHTML(data);
+                openModal('Order Details', content, 'Close', closeModal);
+
+                const editItemBtn = document.getElementById('editItemBtn');
+                if(editItemBtn){
+                    editItemBtn.addEventListener('click', () => openEditModal(data));
+                }
+            });
+            order_table.appendChild(row);
+        });
+        
+    } catch(error){
+        console.error('Error fetching data: ', error)
+        // NEW: Add error message to table
+        order_table.innerHTML = '<tr><td colspan="5">Error loading data.</td></tr>';
+    }
+}
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
             closeModal();
@@ -93,7 +107,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <p><strong>Order ID: </strong>${p.Order_ID}</p>
                 <p><strong>Pallet_ID: </strong>${p.Pallet_ID}</p>
                 <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
-                <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
+                <p><strong>Order_Date: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
             <div/>
 
@@ -142,6 +156,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
         try{
             const response = await fetch(`/api/order/${orderID}`, {
+            const response = await fetch(`/api/order/${orderID}`, {
                 method: 'PUT',
                 headers: {'content-type' : 'application/json'},
                 body: JSON.stringify(data)
@@ -154,7 +169,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 
                 closeModal();
-                fetchInventory();
+                fetchOrder();
         
             } else {
                 console.error('error from server', result.error);
