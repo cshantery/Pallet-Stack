@@ -2,24 +2,16 @@
 
 {% block title %}Order Dashboard{% endblock %}
 
-<aside class="sidebar">
-    <h2>Order Actions</h2>
-    
-    <input type="text" id="orderSearchInput" class="search-box" placeholder="Enter ID...">
-    <select id="orderSearchType" class="search-type" style="width: 100%; margin-bottom: 10px; padding: 5px;">
-        <option value="all">Show All</option>
-        <option value="order_id">Order ID</option>
-        <option value="customer_id">Customer ID</option>
-        <option value="pallet_id">Pallet ID</option>
-    </select>
-    <button id="searchOrdersButton" class="sidebar-btn">Search Orders</button>
-    
-    <hr style="border: 1px solid #ccc; margin: 10px 0;">
-    
-    <button id="createOrderButton" class="sidebar-btn">Create Order</button>
-    <button id="deleteOrdersButton" class="sidebar-btn">Delete Orders</button>
-    <button id="updateOrdersButton" class="sidebar-btn">Update Orders</button>
-</aside>
+{% block content %}
+<div class="inventory-dashboard"> <aside class="sidebar">
+        <h2>Order Actions</h2>
+            <input type="text" id="orderSearchInput" class="search-box" placeholder="Search by Customer or Order ID...">
+                <button id="searchOrdersButton" class="sidebar-btn">Search Orders</button>
+                <hr style="border: 1px solid #ccc; margin: 10px 0;">
+                <button id="createOrderButton" class="sidebar-btn">Create Order</button>
+        <button id="deleteOrdersButton" class="sidebar-btn">Delete Orders</button>
+        <button id="updateOrdersButton" class="sidebar-btn">Update Orders</button>
+        </aside>
 
     <section class="main-content">
         <h2>Current Orders</h2>

@@ -40,58 +40,44 @@ document.addEventListener('DOMContentLoaded', ()=> {
     }
 
 
-async function fetchOrders(params = null){
-    
-    let url = '/api/order'; // Base URL
 
-    // NEW: If params are provided, build a query string
-    if (params) {
-        const queryString = new URLSearchParams(params).toString();
-        if (queryString) {
-            url += `?${queryString}`;
-        }
-    }
+    async function fetchOrder(){
 
-    try{
-        const response = await fetch(url); // Fetch from the new URL
-        const data = await response.json();
-        order_table.innerHTML = '';
+        try{
+            const response = await fetch('/api/order');
+            const data = await response.json();
+            order_table.innerHTML = '';
+            data.forEach(data=> {
+                const row = document.createElement('tr');
 
-        // NEW: Handle empty results
-        if (data.length === 0) {
-            order_table.innerHTML = '<tr><td colspan="5">No orders found.</td></tr>';
-            return;
-        }
+                row.innerHTML = `
+                    <td>${data.Order_ID}</td>
+                    <td>${data.Pallet_ID}</td>
+                    <td>${data.Customer_ID}</td>
+                    <td>${data.Order_Date}</td>
+                    <td>${data.Quantity}</td>
+                `;
 
-        data.forEach(data=> {
-            const row = document.createElement('tr');
 
-            row.innerHTML = `
-                <td>${data.Order_ID}</td>
-                <td>${data.Pallet_ID}</td>
-                <td>${data.Customer_ID}</td>
-                <td>${data.Order_Date}</td>
-                <td>${data.Quantity}</td>
-            `;
+                row.addEventListener('click', ()=>{
+                    const content = createViewDetailsHTML(data);
+                    openModal('Order Details', content, 'Close', closeModal);
 
-            row.addEventListener('click', ()=>{
-                const content = createViewDetailsHTML(data);
-                openModal('Order Details', content, 'Close', closeModal);
+                    const editItemBtn = document.getElementById('editItemBtn');
+                    if(editItemBtn){
+                        editItemBtn.addEventListener('click', () => openEditModal(data));
+                    }
+                });
 
-                const editItemBtn = document.getElementById('editItemBtn');
-                if(editItemBtn){
-                    editItemBtn.addEventListener('click', () => openEditModal(data));
-                }
+                order_table.appendChild(row);
+
+
             });
-            order_table.appendChild(row);
-        });
-        
-    } catch(error){
-        console.error('Error fetching data: ', error)
-        // NEW: Add error message to table
-        order_table.innerHTML = '<tr><td colspan="5">Error loading data.</td></tr>';
+            
+        } catch(error){
+            console.error('Error fetching data: ', error)
+        }
     }
-}
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
             closeModal();
