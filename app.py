@@ -205,7 +205,7 @@ def update_order(order_id):
 
 @app.route('/api/order/<order_id>', methods=['DELETE'])
 def delete_order(order_id):
-    complete = db.delete_order(order_id)
+    complete = modules.delete_order(order_id)
     if complete:
         return jsonify({"message": f"order {order_id} deleted"}), 200
     else:
