@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
                 row.addEventListener('click', ()=>{
                     const content = createViewDetailsHTML(data);
-                    openModal('Invoice Details', content, "Edit", () => {
+                    openModal(' Invoice Details', content, "Edit", () => {
                         openEditInvoiceModal(data);});
                     
                
