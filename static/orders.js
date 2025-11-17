@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
     }
 
 
-async function fetchOrders(params = null){
 
     async function fetchOrder(){
 
@@ -65,6 +64,7 @@ async function fetchOrders(params = null){
                     openModal('Order Details', content, 'Edit', () => openEditModal(data));
 
                 });
+
                 order_table.appendChild(row);
 
 
