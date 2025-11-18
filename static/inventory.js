@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const pallet_table = document.getElementById('inventoryTableBody');
     const add_inventory_button = document.getElementById('addInventoryButton');
     const search_inventory_button = document.getElementById('searchInventoryButton');
-    const delete_inventory_button = document.getElementById('deleteInventoryButton');
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
@@ -83,6 +82,12 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     const content = createViewDetailsHTML(data);
                     openModal('Pallet Details', content, 'Edit', () => openEditModal(data));
 
+                    const deleteItemBtn = document.getElementById('deleteItemBtn');
+                    if (deleteItemBtn) {
+                        deleteItemBtn.addEventListener('click', () => {
+                            deleteInventoryItem(data.Pallet_ID);
+      });
+    }
                 });
 
                 pallet_table.appendChild(row);
@@ -165,11 +170,33 @@ document.addEventListener('DOMContentLoaded', ()=> {
         openModal('Edit Inventory Form', editFormHTML, 'Save Changes', () =>{
             const editForm = document.getElementById('modal-form');
             if(editForm) editForm.requestSubmit();
-        });
-
+                });  
         const editForm = document.getElementById('modal-form');
         if(editForm) editForm.addEventListener('submit', submitUpdate);
     }
+
+
+    async function deleteInventoryItem(palletID) {
+        try {
+            const response = await fetch(`/api/inventory/${palletID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchInventory();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
 
 
   

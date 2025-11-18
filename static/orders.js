@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
+    const delete_orders_button = document.getElementById('deleteOrdersButton');
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
     let modalCloseBtn = document.getElementById('modalCloseBtn');
@@ -63,6 +64,13 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     const content = createViewDetailsHTML(data);
                     openModal('Order Details', content, 'Edit', () => openEditModal(data));
 
+                    const deleteItemBtn = document.getElementById('deleteItemBtn');
+                    if (deleteItemBtn) {
+                        deleteItemBtn.addEventListener('click', () => {
+                            deleteInventoryItem(data.Order_ID);
+      });
+    }
+
                 });
 
                 order_table.appendChild(row);
@@ -74,6 +82,28 @@ document.addEventListener('DOMContentLoaded', ()=> {
             console.error('Error fetching data: ', error)
         }
     }
+
+    async function deleteInventoryItem(orderID) {
+        try {
+            const response = await fetch(`/api/order/${orderID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchOrder();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
 
 
     window.addEventListener('click', (event)=> {
@@ -152,7 +182,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 
                 closeModal();
-                fetchInventory();
+                fetchOrder();
         
             } else {
                 console.error('error from server', result.error);
