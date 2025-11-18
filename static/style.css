@@ -356,3 +356,11 @@ table[id$="Table"] tr:hover {
 .hide {
     display: none !important;
 }
+
+/* NEWLY ADDED */
+/* This class replaces the inline style for <hr> in the sidebars */
+.sidebar-hr {
+    border: 0; /* Reset default border */
+    border-top: 1px solid #ccc; /* Apply the style we want */
+    margin: 10px 0; /* Apply the margin we want */
+}
