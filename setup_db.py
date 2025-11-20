@@ -92,7 +92,8 @@ def create_tables(connection):
                 Pallet_ID INT,
                 Customer_ID INT,
                 Order_Date Date,
-                Quantity INT
+                Quantity INT,
+                Order_Price DOUBLE
             )
             """,
             """
@@ -108,7 +109,6 @@ def create_tables(connection):
                 Invoice_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
                 Customer_ID INT,
                 Order_ID INT,
-                Order_Price DOUBLE,
                 Invoice_Status CHAR(25)
             )
             """

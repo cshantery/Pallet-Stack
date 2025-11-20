@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     <td>${data.Customer_ID}</td>
                     <td>${data.Order_Date}</td>
                     <td>${data.Quantity}</td>
+                    <td>${data.Order_Price}</td>
                 `;
 
 
@@ -123,6 +124,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
                 <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
+                <p><strong>Order_Price: </strong>${p.Order_Price}</p>
             <div/>
 
 
@@ -146,6 +148,9 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 <label for = "quantity">Quantity:</label>
                 <input type = "number" id = "quantity" name = "quantity" value = "${data.Quantity}" required>
+                
+                <label for = "order_price">Order Price:</label>
+                <input type = "number" id = "order_price" name = "order_price" value = "${data.Order_Price}" required>
             </form>
         `;
 
@@ -232,6 +237,9 @@ const addOrderFormHTML = `
 
         <label for="quantity">Quantity:</label>
         <input type="number"    id = "quantity" name="quantity" required>
+        
+        <label for="order_price">Price:</label>
+        <input type="number" id = "order_price" name="order_price" required>
 
     </form>
 `;
@@ -292,6 +300,7 @@ createOrderBtn.addEventListener('click', () => {
     modalCancelBtn.addEventListener('click', closeModal);
 
     fetchOrder();
+    
 
 });
 
