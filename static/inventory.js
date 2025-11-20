@@ -265,14 +265,11 @@ document.addEventListener('DOMContentLoaded', ()=> {
         }
     };
 
-    //modalCloseBtn.addEventListener('click', closeModal);
     modalCancelBtn.addEventListener('click', closeModal);
 
-    fetchInventory();
-});
 
-// SEARCH INVENTORY LOGIC (Client-Side Filter)
-const search_inventory_btn = document.getElementById('searchInventoryButton');
+    // SEARCH INVENTORY LOGIC (Client-Side Filter) - Fixed
+    const search_inventory_btn = document.getElementById('searchInventoryButton');
     const inventory_search_input = document.getElementById('inventorySearchInput');
 
     if(search_inventory_btn){
@@ -291,112 +288,6 @@ const search_inventory_btn = document.getElementById('searchInventoryButton');
         });
     }
 
-
-
-     const submitUpdate = async (event) => {
-        event.preventDefault();
-
-        const editForm = event.target;
-        const formData = new FormData(editForm);
-        const data = Object.fromEntries(formData.entries());
-        const orderID = editForm.dataset.id;
-
-        try{
-            const response = await fetch(`/api/order/${orderID}`, {
-                method: 'PUT',
-                headers: {'content-type' : 'application/json'},
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if(response.ok){
-                console.log("update success", result.message);
-
-                
-                closeModal();
-                fetchInventory();
-        
-            } else {
-                console.error('error from server', result.error);
-                alert(`error: ${result.error}`);
-            }
-        } catch (error){
-            console.error('error', result.error);
-            alert(`error: ${result.error}`);
-        }
-    };
-
-// 1. SEARCH BAR LOGIC
-const searchOrderBtn = document.getElementById('searchOrdersButton');
-const orderSearchInput = document.getElementById('orderSearchInput');
-
-searchOrderBtn.addEventListener('click', () => {
-    const query = orderSearchInput.value.toLowerCase();
-    const rows = document.querySelectorAll('#orderTableBody tr');
-
-    rows.forEach(row => {
-        // Combine text from all cells in the row for broad search
-        const text = row.textContent.toLowerCase();
-        // Toggle visibility based on match
-        row.style.display = text.includes(query) ? '' : 'none';
-    });
-});
-
-// 2. CREATE ORDER BUTTON LOGIC
-const createOrderBtn = document.getElementById('createOrderButton');
-
-const addOrderFormHTML = `
-    <form id="modal-form" class="modal-form">
-
-        <label for="pallet_id">Pallet ID:</label>
-        <input type="number" id = "pallet_id" name="pallet_id" required>
-
-        <label for="customer_id">Customer ID:</label>
-        <input type="number" id = "customer_id" name="customer_id" required>
-
-        <label for="order_date">Date:</label>
-        <input type="date" id = "order_date" name="order_date" required>
-
-        <label for="quantity">Quantity:</label>
-        <input type="number"    id = "quantity" name="quantity" required>
-
-    </form>
-`;
-
-    const handleAddSubmit =  async (event) => {
-        event.preventDefault();
-
-        const addForm = event.target;
-        const formData = new FormData(addForm);
-        const data = Object.fromEntries(formData.entries());
-
-        console.log("sending form.");
-
-        try{
-            const response = await fetch('/api/order', {
-                method: 'POST',
-                headers: {'content-type' : 'application/json'},
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-            if(response.ok){
-                console.log("success", result.message);
-
-                
-                closeModal();
-                fetchOrder();
-                addForm.reset();
-            } else {
-                console.error('Error from server', result.error);
-                alert(`error: ${result.error}`);
-            }
-        } catch (error){
-            console.error('Error', result.error);
-            alert(`error: ${result.error}`);
-        }
-    };
-    // This line should already exist at the bottom
+    // Initial fetch of all inventory data
     fetchInventory();
+});

@@ -165,10 +165,9 @@ document.addEventListener('DOMContentLoaded', ()=> {
     };
 
 // 1. SEARCH BAR LOGIC
-const searchOrderBtn = document.getElementById('searchOrdersButton');
-const orderSearchInput = document.getElementById('orderSearchInput');
-
-searchOrderBtn.addEventListener('click', () => {
+// REFACTORED: SEARCH BAR LOGIC
+// This function's single responsibility is to filter the table rows
+function filterOrderTable() {
     const query = orderSearchInput.value.toLowerCase();
     const rows = document.querySelectorAll('#orderTableBody tr');
 
@@ -178,7 +177,13 @@ searchOrderBtn.addEventListener('click', () => {
         // Toggle visibility based on match
         row.style.display = text.includes(query) ? '' : 'none';
     });
-});
+}
+
+// Event listener for the search button
+searchOrderBtn.addEventListener('click', filterOrderTable);
+
+// Add keyup listener to filter as the user types or clear the filter
+orderSearchInput.addEventListener('keyup', filterOrderTable);
 
 // 2. CREATE ORDER BUTTON LOGIC
 const createOrderBtn = document.getElementById('createOrderButton');
@@ -238,33 +243,21 @@ const handleAddSubmit =  async (event) => {
 
 createOrderBtn.addEventListener('click', () => {
     // Define what happens when user clicks "Confirm" in the modal
-    const submitAction = async () => {
+    const submitAction = () => {
         const form = document.getElementById('modal-form');
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        try {
-            const response = await fetch('/api/order', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            
-            if (response.ok) {
-                document.getElementById('universalModal').classList.remove('active');
-                // Refresh the page or re-fetch data here
-                location.reload(); 
-            } else {
-                alert("Failed to create order.");
-            }
-        } catch (err) {
-            console.error(err);
+        if(form) {
+            // We tell the form to submit, which triggers the 'handleAddSubmit' listener
+            form.requestSubmit();
         }
     };
 
-    // Note: You might need to expose openModal globally - Khai
     openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
 
+    // After opening the modal, we add the submit listener to the new form
+    const addForm = document.getElementById('modal-form');
+    if (addForm) {
+        addForm.addEventListener('submit', handleAddSubmit);
+    }
 });
     modalCancelBtn.addEventListener('click', closeModal);
 
