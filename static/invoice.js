@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     let modalCancelBtn = document.getElementById('modalCancelBtn');
     let modalCloseBtn = document.getElementById('modalCloseBtn');
     const headerActions = document.getElementById('modalHeaderActions');
+    const delete_invoice_button = document.getElementById('deleteInvoiceButton');
+
 
     function openModal(title, content, confirmText, confirmAction){
         modalTitle.textContent = title;
@@ -76,7 +78,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     const content = createViewDetailsHTML(data);
                     openModal(' Invoice Details', content, "Edit", () => {
                         openEditInvoiceModal(data);});
-                    
+                        
+                    const deleteItemBtn = document.getElementById('deleteItemBtn');
+                    if (deleteItemBtn) {
+                        deleteItemBtn.addEventListener('click', () => {
+                            deleteInventoryItem(data.Invoice_ID);
+      });
+    }
                
                 });
 
@@ -88,6 +96,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
             console.error('Error fetching data: ', error)
         }
     }
+
+     async function deleteInventoryItem(invoiceID) {
+        try {
+            const response = await fetch(`/api/invoices/${invoiceID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchInvoice();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
             closeModal();
