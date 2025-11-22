@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     <td>${data.Invoice_ID}</td>
                     <td>${data.Customer_ID}</td>
                     <td>${data.Order_ID}</td>
-                    <td>${data.Order_Price}</td>
                     <td>${data.Invoice_Status}</td>
                 `;
                 
@@ -133,9 +132,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 <label for="order_id">Order ID</label>
                 <input type="number" id="order_id" name="order_id" step="1" required>
 
-                <label for="order_price">Order Price</label>
-                <input type="number" id="order_price" name="order_price" required>
-
                 <label for="invoice_status">Invoice Status</label>
                 <select id = "invoice_status" name = "invoice_status" required>
                     <option value = "outstanding" }>Outstanding</option>
@@ -150,7 +146,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 <p><strong>Invoice ID: </strong>${p.Invoice_ID}</p>
                 <p><strong>Customer ID: </strong>${p.Customer_ID}</p>
                 <p><strong>Order ID: </strong>${p.Order_ID}</p>
-                <p><strong>Order_Price: </strong>${p.Order_Price}</p>
                 <p><strong>Status: </strong>${p.Invoice_Status}</p>
                     
         `
@@ -222,11 +217,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 <label for = "customer_id">Customer ID:</label>
                 <input type = "text" id = "customer_id" name = "customer_id" value = "${data.Customer_ID}"required>
 
-                <label for = "pallet_id">Pallet ID:</label>
-                <input type = "text" id = "pallet_id" name = "pallet_id" value = "${data.Pallet_ID}"required>
+                <label for = "order_id">Order ID:</label>
+                <input type = "text" id = "order_id" name = "order_id" value = "${data.Order_ID}"required>
 
-                <label for = "order_price">Order Price:</label>
-                <input type = "number" id = "order_price" name = "order_price" value = "${data.Order_Price}" required>
 
                 <label for = "status">Status:</label>
                 <select id = "invoice_status" name = "invoice_status" required>
