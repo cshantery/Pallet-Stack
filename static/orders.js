@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', ()=> {
     const order_table = document.getElementById('orderTableBody');
+
+    // Added Lines 
+    const searchOrderBtn = document.getElementById('searchOrdersButton');
+    const orderSearchInput = document.getElementById('orderSearchInput');
+    const createOrderBtn = document.getElementById('createOrderButton');
+    // Added lines
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
@@ -165,43 +171,49 @@ document.addEventListener('DOMContentLoaded', ()=> {
     };
 
 // 1. SEARCH BAR LOGIC
-const searchOrderBtn = document.getElementById('searchOrdersButton');
-const orderSearchInput = document.getElementById('orderSearchInput');
+if (searchOrderBtn && orderSearchInput) {
+    // Define the filter function
+    const performSearch = () => {
+        const query = orderSearchInput.value.toLowerCase();
+        const rows = document.querySelectorAll('#orderTableBody tr');
 
-searchOrderBtn.addEventListener('click', () => {
-    const query = orderSearchInput.value.toLowerCase();
-    const rows = document.querySelectorAll('#orderTableBody tr');
+        rows.forEach(row => {
+            // Combine text from all cells in the row for broad search
+            const text = row.textContent.toLowerCase();
+            // Toggle visibility based on match
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    };
 
-    rows.forEach(row => {
-        // Combine text from all cells in the row for broad search
-        const text = row.textContent.toLowerCase();
-        // Toggle visibility based on match
-        row.style.display = text.includes(query) ? '' : 'none';
-    });
-});
+    // Attach listener to the button
+    searchOrderBtn.addEventListener('click', performSearch);
+
+    // Attach listener to the input (triggers search as you type)
+    orderSearchInput.addEventListener('keyup', performSearch);
+}
 
 // 2. CREATE ORDER BUTTON LOGIC
-const createOrderBtn = document.getElementById('createOrderButton');
+    const addOrderFormHTML = `
+        <form id="modal-form" class="modal-form">
+            <label for="pallet_id">Pallet ID:</label>
+            <input type="number" id="pallet_id" name="pallet_id" required>
 
-const addOrderFormHTML = `
-    <form id="modal-form" class="modal-form">
+            <label for="customer_id">Customer ID:</label>
+            <input type="number" id="customer_id" name="customer_id" required>
 
-        <label for="pallet_id">Pallet ID:</label>
-        <input type="number" id = "pallet_id" name="pallet_id" required>
+            <label for="order_date">Date:</label>
+            <input type="date" id="order_date" name="order_date" required>
 
-        <label for="customer_id">Customer ID:</label>
-        <input type="number" id = "customer_id" name="customer_id" required>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required>
+            
+            <label for="order_price">Price:</label>
+            <input type="number" id="order_price" name="order_price" required>
+        </form>
+    `;
 
-        <label for="order_date">Date:</label>
-        <input type="date" id = "order_date" name="order_date" required>
-
-        <label for="quantity">Quantity:</label>
-        <input type="number"    id = "quantity" name="quantity" required>
-
-    </form>
-`;
-
-const handleAddSubmit =  async (event) => {
+    // Helper function to handle the actual API call
+    const handleAddSubmit = async (event) => {
         event.preventDefault();
 
         const addForm = event.target;
@@ -210,65 +222,54 @@ const handleAddSubmit =  async (event) => {
 
         console.log("sending form.");
 
-        try{
+        try {
             const response = await fetch('/api/order', {
                 method: 'POST',
-                headers: {'content-type' : 'application/json'},
+                headers: { 'content-type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
             const result = await response.json();
 
-            if(response.ok){
+            if (response.ok) {
                 console.log("success", result.message);
-
-                
                 closeModal();
-                fetchOrder();
+                fetchOrder(); // Refreshes the table
                 addForm.reset();
             } else {
                 console.error('Error from server', result.error);
                 alert(`error: ${result.error}`);
             }
-        } catch (error){
-            console.error('Error', result.error);
-            alert(`error: ${result.error}`);
+        } catch (error) {
+            console.error('Error', error);
+            alert(`error: Creation Failed`);
         }
     };
 
-createOrderBtn.addEventListener('click', () => {
-    // Define what happens when user clicks "Confirm" in the modal
-    const submitAction = async () => {
-        const form = document.getElementById('modal-form');
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+    // Only attach listener if button exists
+    if (createOrderBtn) {
+        createOrderBtn.addEventListener('click', () => {
+            // Define what happens when user clicks "Confirm" in the modal
+            const submitAction = () => {
+                const form = document.getElementById('modal-form');
+                if (form) {
+                    form.requestSubmit();
+                }
+            };
 
-        try {
-            const response = await fetch('/api/order', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            
-            if (response.ok) {
-                document.getElementById('universalModal').classList.remove('active');
-                // Refresh the page or re-fetch data here
-                location.reload(); 
-            } else {
-                alert("Failed to create order.");
+            openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
+
+            // After opening the modal, we add the submit listener to the new form
+            const addForm = document.getElementById('modal-form');
+            if (addForm) {
+                addForm.addEventListener('submit', handleAddSubmit);
             }
-        } catch (err) {
-            console.error(err);
-        }
-    };
+        });
+    }
 
-    // Note: You might need to expose openModal globally - Khai
-    openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
+    if(modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
 
-});
-    modalCancelBtn.addEventListener('click', closeModal);
-
+    // Initial Load
     fetchOrder();
 
-});
-
+}); 
