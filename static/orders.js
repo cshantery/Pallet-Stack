@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
     const delete_orders_button = document.getElementById('deleteOrdersButton');
+    const searchOrderBtn = document.getElementById('searchOrdersButton')
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
     let modalCloseBtn = document.getElementById('modalCloseBtn');

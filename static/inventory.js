@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=> {
     const pallet_table = document.getElementById('inventoryTableBody');
     const add_inventory_button = document.getElementById('addInventoryButton');
-    const search_inventory_button = document.getElementById('searchInventoryButton');
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
@@ -160,7 +159,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <input type = "text" id = "size" name = "size" value = "${data.Size}"required>
 
                 <label for = "inventory_count">Inventory Count:</label>
-                <input type = "number" id = "inventory_count" name = "inventory_count" value = "value="${data.Inventory_Count}"" required>
+                <input type = "number" id = "inventory_count" name = inventory_count value = "${data.Inventory_Count}" required>
 
                 <label for = "price">Price/Unit:</label>
                 <input type="text" id = "price" name = "price" value = "${data.Price}" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
