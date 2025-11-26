@@ -7,13 +7,13 @@ from db import get_db
 
 
 #create invoice
-def insert_invoice(customer_id, order_id, order_price, invoice_status):
+def insert_invoice(customer_id, order_id, invoice_status):
     connection = get_db()
     cursor = connection.cursor()
    
     try:
-        query =  """ INSERT INTO invoice (Customer_ID, Order_ID, Order_Price, Invoice_Status) VALUES(%s,%s,%s,%s) """
-        cursor.execute(query, ( customer_id, order_id, order_price, invoice_status))
+        query =  """ INSERT INTO invoice (Customer_ID, Order_ID,  Invoice_Status) VALUES(%s,%s,%s) """
+        cursor.execute(query, ( customer_id, order_id, invoice_status))
         connection.commit()
         return True
     except Exception as e:
@@ -56,7 +56,7 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
 
     
 #update operation for invoice table
-def update_invoice(invoice_id, customer_id = None, order_id = None, order_price = None, invoice_status = None):
+def update_invoice(invoice_id, customer_id = None, order_id = None, invoice_status = None):
     connection = get_db()
     cursor = connection.cursor()
 
@@ -72,11 +72,7 @@ def update_invoice(invoice_id, customer_id = None, order_id = None, order_price 
             updates.append("Order_ID = %s")
             values.append(order_id)
 
-        if order_price != None:
-            updates.append("Order_Price = %s")
-            values.append(order_price)
-
-        if order_price != None:
+        if invoice_status != None:
             updates.append("Invoice_Status = %s")
             values.append(invoice_status)
 
@@ -122,14 +118,14 @@ def delete_invoice(invoice_id):
 
 
 #create order
-def insert_order(pallet_id, customer_id, date, quantity):
+def insert_order(pallet_id, customer_id, date, quantity, price):
     connection = get_db()
     cursor = connection.cursor()
 
     try:
-        query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity) 
-        VALUES (%s,%s,%s,%s)"""
-        cursor.execute(query, (pallet_id, customer_id, date, quantity))
+        query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity, Order_Price) 
+        VALUES (%s,%s,%s,%s,%s)"""
+        cursor.execute(query, (pallet_id, customer_id, date, quantity, price))
         connection.commit()
         return True
     except Exception as e:
@@ -153,6 +149,7 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
                 Customer_ID,
                 DATE_FORMAT(Order_Date, '%Y-%m-%d') AS Order_Date,
                 Quantity
+                Order_Price
             FROM orders
             WHERE 1=1
         """
@@ -179,7 +176,7 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
 
 
 #Update orders table
-def update_order(order_id, pallet_id= None, customer_id= None, order_date= None, quantity= None ):
+def update_order(order_id, pallet_id= None, customer_id= None, order_date= None, quantity= None, price=None):
     connection = get_db()
     cursor = connection.cursor()
 
@@ -202,6 +199,10 @@ def update_order(order_id, pallet_id= None, customer_id= None, order_date= None,
         if quantity != None:
             updates.append("Quantity = %s")
             values.append(quantity)
+
+        if price != None:
+            updates.append("Order_Price = %s")
+            values.append(price)
             
         if not updates:
                 print("No updates.")
@@ -336,7 +337,7 @@ def delete_inventory(pallet_id):
     cursor = connection.cursor()
 
     try:
-        query = "DELETE FROM inventory WHERE Pallet_ID = %s"
+        query = "DELETE FROM pallets WHERE Pallet_ID = %s"
         cursor.execute(query, (pallet_id,))
         connection.commit()
 

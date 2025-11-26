@@ -97,6 +97,7 @@ def create_tables(connection):
                 Quantity INT,
                 FOREIGN KEY (Pallet_ID) REFERENCES pallets(Pallet_ID),
                 FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID)
+                Order_Price DOUBLE
             )
             """,
             """
@@ -117,6 +118,7 @@ def create_tables(connection):
                 Invoice_Status CHAR(25),
                 FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID),
                 FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)
+                Invoice_Status CHAR(25)
             )
             """
         ]

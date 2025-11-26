@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
+    const delete_orders_button = document.getElementById('deleteOrdersButton');
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
     let modalCloseBtn = document.getElementById('modalCloseBtn');
@@ -56,12 +57,20 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     <td>${data.Customer_ID}</td>
                     <td>${data.Order_Date}</td>
                     <td>${data.Quantity}</td>
+                    <td>${data.Order_Price}</td>
                 `;
 
 
                 row.addEventListener('click', ()=>{
                     const content = createViewDetailsHTML(data);
                     openModal('Order Details', content, 'Edit', () => openEditModal(data));
+
+                    const deleteItemBtn = document.getElementById('deleteItemBtn');
+                    if (deleteItemBtn) {
+                        deleteItemBtn.addEventListener('click', () => {
+                            deleteInventoryItem(data.Order_ID);
+      });
+    }
 
                 });
 
@@ -74,6 +83,28 @@ document.addEventListener('DOMContentLoaded', ()=> {
             console.error('Error fetching data: ', error)
         }
     }
+
+    async function deleteInventoryItem(orderID) {
+        try {
+            const response = await fetch(`/api/order/${orderID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchOrder();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
 
 
     window.addEventListener('click', (event)=> {
@@ -93,6 +124,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
                 <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
+                <p><strong>Order_Price: </strong>${p.Order_Price}</p>
             <div/>
 
 
@@ -116,6 +148,9 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 <label for = "quantity">Quantity:</label>
                 <input type = "number" id = "quantity" name = "quantity" value = "${data.Quantity}" required>
+                
+                <label for = "order_price">Order Price:</label>
+                <input type = "number" id = "order_price" name = "order_price" value = "${data.Order_Price}" required>
             </form>
         `;
 
@@ -152,7 +187,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 
                 closeModal();
-                fetchInventory();
+                fetchOrder();
         
             } else {
                 console.error('error from server', result.error);
@@ -202,6 +237,9 @@ const addOrderFormHTML = `
 
         <label for="quantity">Quantity:</label>
         <input type="number"    id = "quantity" name="quantity" required>
+        
+        <label for="order_price">Price:</label>
+        <input type="number" id = "order_price" name="order_price" required>
 
     </form>
 `;
@@ -262,6 +300,7 @@ createOrderBtn.addEventListener('click', () => {
     modalCancelBtn.addEventListener('click', closeModal);
 
     fetchOrder();
+    
 
 });
 

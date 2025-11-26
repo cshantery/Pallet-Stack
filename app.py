@@ -56,10 +56,9 @@ def create_invoices():
     data = request.get_json()
     customer_id = data.get('customer_id')
     order_id = data.get('order_id')
-    order_price = data.get('order_price')
     invoice_status = data.get('invoice_status')
 
-    complete = db.insert_invoice(customer_id, order_id, order_price, invoice_status)
+    complete = db.insert_invoice(customer_id, order_id, invoice_status)
     if complete:
         return jsonify({"message" : "Invoice successfully created"}), 201
     else:
@@ -73,10 +72,9 @@ def update_invoices(invoice_id):
     data = request.get_json()
     customer_id = data.get('customer_id')
     order_id = data.get('order_id')
-    order_price = data.get('order_price')
     invoice_status = data.get('invoice_status')
 
-    complete = db.update_invoice(invoice_id, customer_id, order_id, order_price, invoice_status)
+    complete = db.update_invoice(invoice_id, customer_id, order_id, invoice_status)
     if complete:
         return jsonify({"message" : "invoice update complete"}), 200
     else:
@@ -163,8 +161,9 @@ def create_order():
     customer_id = data.get('customer_id')
     order_date = data.get('order_date')
     quantity = data.get('quantity')
+    order_price = data.get('price')
 
-    complete = db.insert_order(pallet_id, customer_id, order_date, quantity)
+    complete = db.insert_order(pallet_id, customer_id, order_date, quantity, order_price)
     if complete:
         return jsonify({"message" : "Order successfully created"}), 201 
     else: 
@@ -193,8 +192,9 @@ def update_order(order_id):
     customer_id = data.get('customer_id')
     order_date = data.get('order_date')
     quantity = data.get('quantity')
+    order_price = data.get('price')
 
-    complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity)
+    complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity, order_price)
     if complete:
         return jsonify({"message" : "order update complete"}), 200
     else:
@@ -205,7 +205,7 @@ def update_order(order_id):
 
 @app.route('/api/order/<order_id>', methods=['DELETE'])
 def delete_order(order_id):
-    complete = modules.delete_order(order_id)
+    complete = db.delete_order(order_id)
     if complete:
         return jsonify({"message": f"order {order_id} deleted"}), 200
     else:
