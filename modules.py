@@ -220,25 +220,42 @@ def update_order(order_id, pallet_id= None, customer_id= None, order_date= None,
     finally: 
         cursor.close()
 
+# Updated delete_order in modules.py
 def delete_order(order_id):
     connection = get_db()
     cursor = connection.cursor()
 
     try:
-        query = "DELETE FROM orders WHERE Order_ID = %s"
-        cursor.execute(query, (order_id,))
+        # 1. Get the details of the order to be deleted (Pallet_ID and Quantity)
+        get_order_query = "SELECT Pallet_ID, Quantity FROM orders WHERE Order_ID = %s"
+        cursor.execute(get_order_query, (order_id,))
+        order_data = cursor.fetchone()
+
+        if not order_data:
+            print("Order not found.")
+            return False
+
+        pallet_id = order_data[0]
+        quantity_to_restore = order_data[1]
+
+        # 2. Add the quantity back to the inventory
+        restore_stock_query = "UPDATE pallets SET Inventory_Count = Inventory_Count + %s WHERE Pallet_ID = %s"
+        cursor.execute(restore_stock_query, (quantity_to_restore, pallet_id))
+
+        # 3. Delete the order
+        delete_query = "DELETE FROM orders WHERE Order_ID = %s"
+        cursor.execute(delete_query, (order_id,))
+        
         connection.commit()
         
-        #return true if at least one row was deleted
         return cursor.rowcount > 0  
     
     except Exception as e:
-        print(" Error deleting order {order_id}:", e)
+        print(f" Error deleting order {order_id}:", e)
         connection.rollback()
         return False
     finally:
         cursor.close()
-
 
 #create inventory
 def insert_inventory(pallet_condition, size, inventory_count, price):
