@@ -121,20 +121,44 @@ def delete_invoice(invoice_id):
         cursor.close()
 
 
-#create order
-def insert_order(pallet_id, customer_id, date, quantity):
+# Updated insert_order in modules.py
+def insert_order(pallet_id, customer_id, date, quantity, price):
     connection = get_db()
     cursor = connection.cursor()
 
     try:
-        query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity) 
-        VALUES (%s,%s,%s,%s)"""
-        cursor.execute(query, (pallet_id, customer_id, date, quantity))
+        # 1. Check if the pallet exists and has enough inventory
+        check_query = "SELECT Inventory_Count FROM pallets WHERE Pallet_ID = %s"
+        cursor.execute(check_query, (pallet_id,))
+        result = cursor.fetchone()
+
+        if not result:
+            print(f"Error: Pallet_ID {pallet_id} not found.")
+            return False
+        
+        current_stock = result[0]
+
+        if current_stock < int(quantity):
+            print(f"Error: Not enough stock. Available: {current_stock}, Requested: {quantity}")
+            return False
+
+        # 2. Deduct the inventory
+        update_stock_query = "UPDATE pallets SET Inventory_Count = Inventory_Count - %s WHERE Pallet_ID = %s"
+        cursor.execute(update_stock_query, (quantity, pallet_id))
+
+        # 3. Create the order
+        insert_query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity, Order_Price) 
+        VALUES (%s,%s,%s,%s,%s)"""
+        cursor.execute(insert_query, (pallet_id, customer_id, date, quantity, price))
+        
+        # Commit the transaction (save both changes)
         connection.commit()
         return True
+
     except Exception as e:
         print("Error creating order:", e)
-        connection.rollback()
+        # If anything goes wrong, undo changes to both tables
+        connection.rollback() 
         return False
     finally:
         cursor.close()
