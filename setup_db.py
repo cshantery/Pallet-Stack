@@ -66,6 +66,8 @@ def create_tables(connection):
     try:
         cursor = connection.cursor()
 
+        # The order of these tables matters!
+        # Parent tables (pallets, customer) must be created BEFORE Child tables (orders, invoice)
         tables = [
 
             """
@@ -93,6 +95,8 @@ def create_tables(connection):
                 Customer_ID INT,
                 Order_Date Date,
                 Quantity INT,
+                FOREIGN KEY (Pallet_ID) REFERENCES pallets(Pallet_ID),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID)
                 Order_Price DOUBLE
             )
             """,
@@ -101,7 +105,8 @@ def create_tables(connection):
                 Shipment_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Order_ID INT,
                 Shipment_Date DATE,
-                Shipment_Status VARCHAR(25)
+                Shipment_Status VARCHAR(25),
+                FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)
             )
             """,
             """
@@ -109,6 +114,10 @@ def create_tables(connection):
                 Invoice_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
                 Customer_ID INT,
                 Order_ID INT,
+                Order_Price DOUBLE,
+                Invoice_Status CHAR(25),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID),
+                FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)
                 Invoice_Status CHAR(25)
             )
             """
@@ -118,6 +127,32 @@ def create_tables(connection):
             cursor.execute(table)
         connection.commit()
         print(" Tables created successfully!")
+
+        # --- NEW: Apply Foreign Keys to EXISTING tables safely ---
+        print(" Checking Foreign Key constraints...")
+        
+        alter_commands = [
+            ("orders", "fk_orders_pallet", "FOREIGN KEY (Pallet_ID) REFERENCES pallets(Pallet_ID)"),
+            ("orders", "fk_orders_customer", "FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID)"),
+            ("shipments", "fk_shipments_order", "FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)"),
+            ("invoice", "fk_invoice_customer", "FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID)"),
+            ("invoice", "fk_invoice_order", "FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)")
+        ]
+
+        for table_name, constraint_name, sql_def in alter_commands:
+            try:
+                # Try to add the constraint. If it exists, it throws a specific error we catch.
+                query = f"ALTER TABLE {table_name} ADD CONSTRAINT {constraint_name} {sql_def}"
+                cursor.execute(query)
+                connection.commit()
+                print(f"  [SUCCESS] Added constraint {constraint_name} to {table_name}")
+            except Error as err:
+                if err.errno == 1061: # Duplicate key name
+                    pass # Constraint already exists, do nothing
+                elif err.errno == 1452: # Data violation
+                     print(f"  [WARNING] Could not add {constraint_name}. Existing data violates the rules.")
+                else:
+                    print(f"  [ERROR] Failed to add {constraint_name}: {err}")
+
     except Error as e:
         print(" Table creation failed:", e)
-
