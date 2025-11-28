@@ -120,7 +120,7 @@ def delete_invoice(invoice_id):
 #create order
 # Replaced the existing insert_order function
 
-def insert_order(pallet_id, customer_id, date, quantity, price):
+def insert_order(pallet_id, customer_id, date, quantity, price, status):
     # 1. Deduct Inventory First
     if not adjust_inventory(pallet_id, -int(quantity)):
         print(f"Failed to deduct inventory for Pallet {pallet_id}")
@@ -133,7 +133,7 @@ def insert_order(pallet_id, customer_id, date, quantity, price):
         # 2. If deduction succeeded, create the order
         query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity, Order_Price) 
         VALUES (%s,%s,%s,%s,%s)"""
-        cursor.execute(query, (pallet_id, customer_id, date, quantity, price))
+        cursor.execute(query, (pallet_id, customer_id, date, quantity, price, status))
         connection.commit()
         return True
     except Exception as e:
@@ -161,6 +161,7 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
                 DATE_FORMAT(Order_Date, '%Y-%m-%d') AS Order_Date,
                 Quantity
                 Order_Price
+                Order_Status
             FROM orders
             WHERE 1=1
         """
@@ -187,7 +188,7 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
 
 
 #Update orders table
-def update_order(order_id, pallet_id= None, customer_id= None, order_date= None, quantity= None, price=None):
+def update_order(order_id, pallet_id= None, customer_id= None, order_date= None, quantity= None, price=None, status=None):
     connection = get_db()
     cursor = connection.cursor()
 
@@ -214,6 +215,10 @@ def update_order(order_id, pallet_id= None, customer_id= None, order_date= None,
         if price != None:
             updates.append("Order_Price = %s")
             values.append(price)
+
+        if price != None:
+            updates.append("Order_Status")
+            values.append(status)
             
         if not updates:
                 print("No updates.")
