@@ -118,11 +118,19 @@ def delete_invoice(invoice_id):
 
 
 #create order
+# Replaced the existing insert_order function
+
 def insert_order(pallet_id, customer_id, date, quantity, price):
+    # 1. Deduct Inventory First
+    if not adjust_inventory(pallet_id, -int(quantity)):
+        print(f"Failed to deduct inventory for Pallet {pallet_id}")
+        return False 
+
     connection = get_db()
     cursor = connection.cursor()
 
     try:
+        # 2. If deduction succeeded, create the order
         query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity, Order_Price) 
         VALUES (%s,%s,%s,%s,%s)"""
         cursor.execute(query, (pallet_id, customer_id, date, quantity, price))
@@ -130,6 +138,9 @@ def insert_order(pallet_id, customer_id, date, quantity, price):
         return True
     except Exception as e:
         print("Error creating order:", e)
+        # 3. CRITICAL: If the order fails, PUT THE INVENTORY BACK
+        print("Rolling back inventory deduction...")
+        adjust_inventory(pallet_id, int(quantity)) 
         connection.rollback()
         return False
     finally:
@@ -221,25 +232,46 @@ def update_order(order_id, pallet_id= None, customer_id= None, order_date= None,
     finally: 
         cursor.close()
 
+# Delete Order
+# Replaced the existing delete_order function
 def delete_order(order_id):
     connection = get_db()
     cursor = connection.cursor()
 
     try:
+        # 1. Get the order details BEFORE deleting it
+        cursor.execute("SELECT Pallet_ID, Quantity FROM orders WHERE Order_ID = %s", (order_id,))
+        order = cursor.fetchone()
+        
+        if not order:
+            print(f"Order {order_id} not found.")
+            return False
+
+        # Store these for step 3
+        # order is a tuple: (Pallet_ID, Quantity) based on the SELECT above
+        pallet_id = order[0] 
+        quantity = order[1]
+
+        # 2. Delete the order
         query = "DELETE FROM orders WHERE Order_ID = %s"
         cursor.execute(query, (order_id,))
-        connection.commit()
         
-        #return true if at least one row was deleted
-        return cursor.rowcount > 0  
-    
+        if cursor.rowcount > 0:
+            connection.commit()
+            
+            # 3. Put the inventory back (add positive quantity)
+            adjust_inventory(pallet_id, int(quantity))
+            print(f"Restored {quantity} units to Pallet {pallet_id}")
+            return True
+        else:
+            return False
+            
     except Exception as e:
-        print(" Error deleting order {order_id}:", e)
+        print(f" Error deleting order {order_id}:", e)
         connection.rollback()
         return False
     finally:
         cursor.close()
-
 
 #create inventory
 def insert_inventory(pallet_condition, size, inventory_count, price):
@@ -350,3 +382,27 @@ def delete_inventory(pallet_id):
     finally: 
         cursor.close()
 
+
+# Helper Function that updates pallet count
+
+def adjust_inventory(pallet_id, quantity_change):
+    """
+    Updates the inventory count for a specific pallet.
+    quantity_change: negative number to deduct, positive to add.
+    """
+    connection = get_db()
+    cursor = connection.cursor()
+    try:
+        # Update the specific pallet's count
+        query = "UPDATE pallets SET Inventory_Count = Inventory_Count + %s WHERE Pallet_ID = %s"
+        cursor.execute(query, (quantity_change, pallet_id))
+        connection.commit()
+        
+        # Return True if a row was actually updated
+        return cursor.rowcount > 0
+    except Exception as e:
+        print("Error adjusting inventory:", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
