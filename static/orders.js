@@ -1,19 +1,24 @@
-document.addEventListener('DOMContentLoaded', ()=> {
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. GET DOM ELEMENTS
     const order_table = document.getElementById('orderTableBody');
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
-    const delete_orders_button = document.getElementById('deleteOrdersButton');
+    
+    // Modal Buttons
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
-    let modalCloseBtn = document.getElementById('modalCloseBtn');
+    
+    // Search Elements
+    const searchOrderBtn = document.getElementById('searchOrdersButton'); 
+    const orderSearchInput = document.getElementById('orderSearchInput');
+    const createOrderBtn = document.getElementById('createOrderButton');
 
+    // 2. MODAL FUNCTIONS
 
     const closeModal = () => {
         modal.classList.remove('active');
-        modalBody.innerHTML = ''; // Clear the body to remove old forms
-        
-        // Find any form that was in the modal and remove its submit listener
+        modalBody.innerHTML = ''; 
         const oldForm = document.getElementById('modal-form');
         if (oldForm) {
             oldForm.removeEventListener('submit', handleAddSubmit);
@@ -21,70 +26,74 @@ document.addEventListener('DOMContentLoaded', ()=> {
         }
     };
 
-
     function openModal(title, content, confirmText, confirmAction){
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
+
+        // Reset Confirm Button
         const newConfirmBtn = modalConfirmBtn.cloneNode(true);
-
-        if (confirmText) {
-        newConfirmBtn.textContent = confirmText;
-        }
-
+        if (confirmText) newConfirmBtn.textContent = confirmText;
         newConfirmBtn.addEventListener('click', confirmAction);
         modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, modalConfirmBtn);
         modalConfirmBtn = newConfirmBtn;
 
-
+        // Reset Delete Button
+        const deleteBtn = document.getElementById('deleteItemBtn');
+        const newDeleteBtn = deleteBtn.cloneNode(true);
+        deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+        newDeleteBtn.style.display = 'none';
 
         modal.classList.add('active');
+        return newDeleteBtn; 
     }
 
-
+    // 3. API & TABLE LOGIC
 
     async function fetchOrder(){
-
         try{
             const response = await fetch('/api/order');
             const data = await response.json();
             order_table.innerHTML = '';
-            data.forEach(data=> {
-                const row = document.createElement('tr');
+            
+            if (!data.length) {
+                order_table.innerHTML = '<tr><td colspan="6">No orders found.</td></tr>';
+                return;
+            }
 
+            data.forEach(item => {
+                const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${data.Order_ID}</td>
-                    <td>${data.Pallet_ID}</td>
-                    <td>${data.Customer_ID}</td>
-                    <td>${data.Order_Date}</td>
-                    <td>${data.Quantity}</td>
-                    <td>${data.Order_Price}</td>
+                    <td>${item.Order_ID}</td>
+                    <td>${item.Pallet_ID}</td>
+                    <td>${item.Customer_ID}</td>
+                    <td>${item.Order_Date}</td>
+                    <td>${item.Quantity}</td>
+                    <td>${item.Order_Price}</td>
                 `;
 
+                row.addEventListener('click', () => {
+                    const deleteBtn = openModal(
+                        'Order Details', 
+                        createViewDetailsHTML(item), 
+                        'Edit', 
+                        () => openEditModal(item)
+                    );
 
-                row.addEventListener('click', ()=>{
-                    const content = createViewDetailsHTML(data);
-                    openModal('Order Details', content, 'Edit', () => openEditModal(data));
-
-                    const deleteItemBtn = document.getElementById('deleteItemBtn');
-                    if (deleteItemBtn) {
-                        deleteItemBtn.addEventListener('click', () => {
-                            deleteInventoryItem(data.Order_ID);
-      });
-    }
-
+                    deleteBtn.style.display = 'block';
+                    deleteBtn.addEventListener('click', () => {
+                        deleteInventoryItem(item.Order_ID);
+                    });
                 });
-
                 order_table.appendChild(row);
-
-
             });
-            
         } catch(error){
-            console.error('Error fetching data: ', error)
+            console.error('Error fetching data: ', error);
         }
     }
 
     async function deleteInventoryItem(orderID) {
+        if(!confirm("Are you sure you want to delete this order?")) return;
+
         try {
             const response = await fetch(`/api/order/${orderID}`, {
                 method: 'DELETE',
@@ -92,82 +101,57 @@ document.addEventListener('DOMContentLoaded', ()=> {
             });
             const result = await response.json();
             if (response.ok) {
-                console.log("Delete success", result.message);
                 closeModal();
                 fetchOrder();
-            } 
-            else {
-                console.error("Error from server", result.message);
+            } else {
                 alert(`Error: ${result.message}`);
             }
         } catch (error) {
             console.error("Error deleting", error);
-            alert("Error");
-  }
-}
-
-
-    window.addEventListener('click', (event)=> {
-        if(event.target == modal){
-            closeModal();
+            alert("Error deleting order");
         }
-    });
-    
+    }
+
+    // 4. TEMPLATES & FORMS
+
     function createViewDetailsHTML(p){
         return `
-      
-
-            
             <div class = "item-details">
                 <p><strong>Order ID: </strong>${p.Order_ID}</p>
-                <p><strong>Pallet_ID: </strong>${p.Pallet_ID}</p>
-                <p><strong>Customer_ID: </strong>${p.Customer_ID}</p>
-                <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
+                <p><strong>Pallet ID: </strong>${p.Pallet_ID}</p>
+                <p><strong>Customer ID: </strong>${p.Customer_ID}</p>
+                <p><strong>Order Date: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
-                <p><strong>Order_Price: </strong>${p.Order_Price}</p>
-            <div/>
-
-
-                    
+                <p><strong>Order Price: </strong>${p.Order_Price}</p>
+            </div>
         `;
     }
 
-
     function openEditModal(data){
         const editFormHTML = `
-            <form id = "modal-form" class="modal-form" data-id = "${data.Order_ID}">
-
-                <label for = "pallet_id">Pallet ID:</label>
-                <input type = "text" id = "pallet_id" name = "pallet_id" value = "${data.Pallet_ID}"required>
-
-                <label for = "customer_id">Customer ID:</label>
-                <input type = "text" id = "customer_id" name = "customer_id" value = "${data.Customer_ID}"required>
-
-                <label for = "order_date">Order Date:</label>
-                <input type = "Date" id = "order_date" name = "order_date" value = "${data.Order_Date}" required>
-
-                <label for = "quantity">Quantity:</label>
-                <input type = "number" id = "quantity" name = "quantity" value = "${data.Quantity}" required>
-                
-                <label for = "order_price">Order Price:</label>
-                <input type = "number" id = "order_price" name = "order_price" value = "${data.Order_Price}" required>
+            <form id="modal-form" class="modal-form" data-id="${data.Order_ID}">
+                <label for="pallet_id">Pallet ID:</label>
+                <input type="text" id="pallet_id" name="pallet_id" value="${data.Pallet_ID}" required>
+                <label for="customer_id">Customer ID:</label>
+                <input type="text" id="customer_id" name="customer_id" value="${data.Customer_ID}" required>
+                <label for="order_date">Order Date:</label>
+                <input type="Date" id="order_date" name="order_date" value="${data.Order_Date}" required>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" value="${data.Quantity}" required>
+                <label for="order_price">Order Price:</label>
+                <input type="number" id="order_price" name="order_price" value="${data.Order_Price}" required>
             </form>
         `;
-
-        openModal(' Edit Order Form', editFormHTML, 'Save Changes', () =>{
+        openModal('Edit Order Form', editFormHTML, 'Save Changes', () => {
             const editForm = document.getElementById('modal-form');
             if(editForm) editForm.requestSubmit();
         });
-
         const editForm = document.getElementById('modal-form');
         if(editForm) editForm.addEventListener('submit', submitUpdate);
     }
 
-
-
     const submitUpdate = async (event) => {
         event.preventDefault();
-
         const editForm = event.target;
         const formData = new FormData(editForm);
         const data = Object.fromEntries(formData.entries());
@@ -179,86 +163,39 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 headers: {'content-type' : 'application/json'},
                 body: JSON.stringify(data)
             });
-
-            const result = await response.json();
-
             if(response.ok){
-                console.log("update success", result.message);
-
-                
                 closeModal();
                 fetchOrder();
-        
             } else {
-                console.error('error from server', result.error);
+                const result = await response.json();
                 alert(`error: ${result.error}`);
             }
         } catch (error){
-            console.error('error', result.error);
-            alert(`error: ${result.error}`);
+            console.error('error', error);
+            alert(`Update failed`);
         }
     };
 
-// 1. SEARCH BAR LOGIC
-// REFACTORED: SEARCH BAR LOGIC
-const searchOrderBtn = document.getElementById('searchOrdersButton'); 
-const orderSearchInput = document.getElementById('orderSearchInput');
+    const addOrderFormHTML = `
+        <form id="modal-form" class="modal-form">
+            <label for="pallet_id">Pallet ID:</label>
+            <input type="number" id="pallet_id" name="pallet_id" required>
+            <label for="customer_id">Customer ID:</label>
+            <input type="number" id="customer_id" name="customer_id" required>
+            <label for="order_date">Date:</label>
+            <input type="date" id="order_date" name="order_date" required>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required>
+            <label for="order_price">Price:</label>
+            <input type="number" id="order_price" name="price" required>
+        </form>
+    `;
 
-function filterOrderTable() {
-    // Now orderSearchInput is properly defined
-    const query = orderSearchInput.value.toLowerCase();
-    const rows = document.querySelectorAll('#orderTableBody tr');
-
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        // Toggle visibility based on match
-        row.style.display = text.includes(query) ? '' : 'none';
-    });
-}
-
-// Event listener for the search button
-// Now searchOrderBtn is properly defined - Khai
-if (searchOrderBtn) {
-    searchOrderBtn.addEventListener('click', filterOrderTable);
-}
-
-// Add keyup listener to filter as the user types or clear the filter
-if (orderSearchInput) {
-    orderSearchInput.addEventListener('keyup', filterOrderTable);
-}
-
-// 2. CREATE ORDER BUTTON LOGIC
-const createOrderBtn = document.getElementById('createOrderButton');
-
-const addOrderFormHTML = `
-    <form id="modal-form" class="modal-form">
-
-        <label for="pallet_id">Pallet ID:</label>
-        <input type="number" id = "pallet_id" name="pallet_id" required>
-
-        <label for="customer_id">Customer ID:</label>
-        <input type="number" id = "customer_id" name="customer_id" required>
-
-        <label for="order_date">Date:</label>
-        <input type="date" id = "order_date" name="order_date" required>
-
-        <label for="quantity">Quantity:</label>
-        <input type="number"    id = "quantity" name="quantity" required>
-        
-        <label for="order_price">Price:</label>
-        <input type="number" id = "order_price" name="order_price" required>
-
-    </form>
-`;
-
-const handleAddSubmit =  async (event) => {
+    const handleAddSubmit = async (event) => {
         event.preventDefault();
-
         const addForm = event.target;
         const formData = new FormData(addForm);
         const data = Object.fromEntries(formData.entries());
-
-        console.log("sending form.");
 
         try{
             const response = await fetch('/api/order', {
@@ -266,48 +203,53 @@ const handleAddSubmit =  async (event) => {
                 headers: {'content-type' : 'application/json'},
                 body: JSON.stringify(data)
             });
-
             const result = await response.json();
-
             if(response.ok){
-                console.log("success", result.message);
-
-                
                 closeModal();
                 fetchOrder();
                 addForm.reset();
             } else {
-                console.error('Error from server', result.error);
-                alert(`error: ${result.error}`);
+                alert(`Error: ${result.error}`);
             }
         } catch (error){
-            console.error('Error', result.error);
-            alert(`error: ${result.error}`);
+            console.error('Error', error);
+            alert(`Creation failed`);
         }
     };
 
-createOrderBtn.addEventListener('click', () => {
-    // Define what happens when user clicks "Confirm" in the modal
-    const submitAction = () => {
-        const form = document.getElementById('modal-form');
-        if(form) {
-            // We tell the form to submit, which triggers the 'handleAddSubmit' listener
-            form.requestSubmit();
-        }
-    };
+    // 5. EVENT LISTENERS
 
-    openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
-
-    // After opening the modal, we add the submit listener to the new form
-    const addForm = document.getElementById('modal-form');
-    if (addForm) {
-        addForm.addEventListener('submit', handleAddSubmit);
+    if (createOrderBtn) {
+        createOrderBtn.addEventListener('click', () => {
+            const submitAction = () => {
+                const form = document.getElementById('modal-form');
+                if(form) form.requestSubmit();
+            };
+            openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
+            const addForm = document.getElementById('modal-form');
+            if (addForm) addForm.addEventListener('submit', handleAddSubmit);
+        });
     }
-});
-    modalCancelBtn.addEventListener('click', closeModal);
+
+    if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
+
+    window.addEventListener('click', (event)=> {
+        if(event.target == modal) closeModal();
+    });
+
+    // SEARCH LOGIC
+    function filterOrderTable() {
+        if (!orderSearchInput) return;
+        const query = orderSearchInput.value.toLowerCase();
+        const rows = document.querySelectorAll('#orderTableBody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
+    if (searchOrderBtn) searchOrderBtn.addEventListener('click', filterOrderTable);
+    if (orderSearchInput) orderSearchInput.addEventListener('keyup', filterOrderTable);
 
     fetchOrder();
-    
-
 });
-
