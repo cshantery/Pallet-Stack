@@ -1,18 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // get DOM elements
+    // 1. GET DOM ELEMENTS
     const pallet_table = document.getElementById('inventoryTableBody');
     const add_inventory_button = document.getElementById('addInventoryButton');
     const search_inventory_button = document.getElementById('searchInventoryButton');
     const inventory_search_input = document.getElementById('inventorySearchInput');
-    const delete_inventory_button = document.getElementById('deleteInventoryButton');
+    
+    // Modal Elements
     const modal = document.getElementById('universalModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
-    let modalCloseBtn = document.getElementById('modalCloseBtn');
+    let modalCloseBtn = document.getElementById('modalCloseBtn'); // If you use the X button
 
-    // close modal and cleanup form listeners
+    // 2. MODAL FUNCTIONS
+
+    // Close Modal and cleanup
     const closeModal = () => {
         modal.classList.remove('active');
         modalBody.innerHTML = '';
@@ -23,29 +26,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // open modal with dynamic title, content, and confirm action
+    // Open Modal (Clones buttons to remove old listeners)
     function openModal(title, content, confirmText, confirmAction){
         modalTitle.textContent = title;
         modalBody.innerHTML = content;
+        
+        // Reset Confirm Button
         const newConfirmBtn = modalConfirmBtn.cloneNode(true);
         if (confirmText) newConfirmBtn.textContent = confirmText;
         newConfirmBtn.addEventListener('click', confirmAction);
         modalConfirmBtn.parentNode.replaceChild(newConfirmBtn, modalConfirmBtn);
         modalConfirmBtn = newConfirmBtn;
+
+        // Reset Delete Button (Hide by default)
+        const deleteBtn = document.getElementById('deleteItemBtn');
+        const newDeleteBtn = deleteBtn.cloneNode(true);
+        deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+        newDeleteBtn.style.display = 'none'; 
+
         modal.classList.add('active');
+        return newDeleteBtn; // Return so we can activate it if needed
     }
 
-    // fetch inventory from API, optionally filtered by search term
+    // 3. API & TABLE LOGIC
+
+    // Fetch Inventory
     async function fetchInventory(search_term = ''){
         try {
             const url = '/api/inventory' + (search_term ? `?search=${encodeURIComponent(search_term)}` : '');
             const response = await fetch(url);
             const data = await response.json();
             pallet_table.innerHTML = '';
+            
             if (!data.length) {
                 pallet_table.innerHTML = '<tr><td colspan="5">No inventory found.</td></tr>';
                 return;
             }
+
             data.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -55,13 +72,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${item.Inventory_Count}</td>
                     <td>${item.Price}</td>
                 `;
+                
+                // Row Click
                 row.addEventListener('click', () => {
-                    openModal(
+                    const deleteBtn = openModal(
                         'Pallet Details',
                         createViewDetailsHTML(item),
                         'Edit',
                         () => openEditModal(item)
                     );
+
+                    // Show Delete Button and attach listener
+                    deleteBtn.style.display = 'block';
+                    deleteBtn.addEventListener('click', () => {
+                        deleteInventoryItem(item.Pallet_ID);
+                    });
                 });
                 pallet_table.appendChild(row);
             });
@@ -70,17 +95,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // bind search button and auto-clear behavior
-    if (search_inventory_button) {
-        search_inventory_button.addEventListener('click', () => {
-            fetchInventory(inventory_search_input.value.trim());
-        });
-        inventory_search_input.addEventListener('keyup', e => {
-            if (e.target.value === '') fetchInventory();
-        });
+    // Delete Logic
+    async function deleteInventoryItem(palletID) {
+        if(!confirm("Are you sure you want to delete this pallet?")) return;
+
+        try {
+            const response = await fetch(`/api/inventory/${palletID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                closeModal();
+                fetchInventory();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Delete failed");
+        }
     }
 
-    // HTML template for add-inventory form
+    // 4. TEMPLATES & FORMS
+
     const addInventoryFormHTML = `
         <form id="modal-form" class="modal-form">
             <label for="pallet_condition">Pallet Condition:</label>
@@ -98,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </form>
     `;
 
-    // generate HTML for viewing pallet details
     function createViewDetailsHTML(p){
         return `
             <div class="item-details">
@@ -111,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // open modal with edit form pre-filled for given pallet
+    // Open Edit Modal
     function openEditModal(data){
         const editFormHTML = `
             <form id="modal-form" class="modal-form" data-id="${data.Pallet_ID}">
@@ -135,15 +172,27 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-form')?.addEventListener('submit', submitUpdate);
     }
 
-    // add button shows add-inventory modal and binds its submit
+    // 5. EVENT LISTENERS
+
+    // Search Logic
+    if (search_inventory_button) {
+        search_inventory_button.addEventListener('click', () => {
+            fetchInventory(inventory_search_input.value.trim());
+        });
+        inventory_search_input.addEventListener('keyup', e => {
+            if (e.target.value === '') fetchInventory();
+        });
+    }
+
+    // Add Button Logic
     add_inventory_button.addEventListener('click', () => {
-        openModal('Add New Inventory Item', addInventoryFormHTML, null, () => {
+        openModal('Add New Inventory Item', addInventoryFormHTML, 'Add Item', () => {
             document.getElementById('modal-form')?.requestSubmit();
         });
         document.getElementById('modal-form')?.addEventListener('submit', handleAddSubmit);
     });
 
-    // handle PUT request to update pallet
+    // Update Submit (PUT)
     const submitUpdate = async event => {
         event.preventDefault();
         const form = event.target;
@@ -166,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // handle POST request to add new pallet
+    // Create Submit (POST)
     const handleAddSubmit = async event => {
         event.preventDefault();
         const data = Object.fromEntries(new FormData(event.target).entries());
@@ -188,12 +237,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // close modal when clicking outside or cancel button
+    // Close Modal events
     window.addEventListener('click', e => {
         if (e.target === modal) closeModal();
     });
-    modalCancelBtn?.addEventListener('click', closeModal);
+    if(modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
 
-    // initial data load
+    // Initial Load
     fetchInventory();
 });
