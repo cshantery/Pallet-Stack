@@ -201,13 +201,15 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
 // 1. SEARCH BAR LOGIC
 // REFACTORED: SEARCH BAR LOGIC
-// This function's single responsibility is to filter the table rows
+const searchOrderBtn = document.getElementById('searchOrdersButton'); 
+const orderSearchInput = document.getElementById('orderSearchInput');
+
 function filterOrderTable() {
+    // Now orderSearchInput is properly defined
     const query = orderSearchInput.value.toLowerCase();
     const rows = document.querySelectorAll('#orderTableBody tr');
 
     rows.forEach(row => {
-        // Combine text from all cells in the row for broad search
         const text = row.textContent.toLowerCase();
         // Toggle visibility based on match
         row.style.display = text.includes(query) ? '' : 'none';
@@ -215,10 +217,15 @@ function filterOrderTable() {
 }
 
 // Event listener for the search button
-searchOrderBtn.addEventListener('click', filterOrderTable);
+// Now searchOrderBtn is properly defined - Khai
+if (searchOrderBtn) {
+    searchOrderBtn.addEventListener('click', filterOrderTable);
+}
 
 // Add keyup listener to filter as the user types or clear the filter
-orderSearchInput.addEventListener('keyup', filterOrderTable);
+if (orderSearchInput) {
+    orderSearchInput.addEventListener('keyup', filterOrderTable);
+}
 
 // 2. CREATE ORDER BUTTON LOGIC
 const createOrderBtn = document.getElementById('createOrderButton');
