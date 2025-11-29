@@ -162,8 +162,9 @@ def create_order():
     order_date = data.get('order_date')
     quantity = data.get('quantity')
     order_price = data.get('price')
+    order_status = data.get('status')
 
-    complete = db.insert_order(pallet_id, customer_id, order_date, quantity, order_price)
+    complete = db.insert_order(pallet_id, customer_id, order_date, quantity, order_price, order_status)
     if complete:
         return jsonify({"message" : "Order successfully created"}), 201 
     else: 
@@ -193,8 +194,9 @@ def update_order(order_id):
     order_date = data.get('order_date')
     quantity = data.get('quantity')
     order_price = data.get('price')
+    order_status = data.get('status')
 
-    complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity, order_price)
+    complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity, order_price, order_status)
     if complete:
         return jsonify({"message" : "order update complete"}), 200
     else:

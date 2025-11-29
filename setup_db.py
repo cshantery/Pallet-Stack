@@ -94,6 +94,7 @@ def create_tables(connection):
                 Order_Date Date,
                 Quantity INT,
                 Order_Price DOUBLE
+                Order_Status CHAR(25)
             )
             """,
             """

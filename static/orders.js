@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     <td>${data.Order_Date}</td>
                     <td>${data.Quantity}</td>
                     <td>${data.Order_Price}</td>
+                    <td>${data.Order_Status}</td>
                 `;
 
 
@@ -125,6 +126,7 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 <p><strong>Order_Datet: </strong>${p.Order_Date}</p>
                 <p><strong>Quantity: </strong>${p.Quantity}</p>
                 <p><strong>Order_Price: </strong>${p.Order_Price}</p>
+                <p><strong>Order_Status: </strong>${p.Order_Status}</p>
             <div/>
 
 
@@ -151,6 +153,13 @@ document.addEventListener('DOMContentLoaded', ()=> {
                 
                 <label for = "order_price">Order Price:</label>
                 <input type = "number" id = "order_price" name = "order_price" value = "${data.Order_Price}" required>
+
+                <label for="order_status">Order_Status</label>
+                <select id = "order_status" name = "order_status" required>
+                    <option value = "Hold" }>Hold</option>
+                    <option value = "Processing" }Processing</option>
+                    <option value = "shipped" }>Shipped</option>
+                    <option value = "Delivered" }>Delivered</option>
             </form>
         `;
 
@@ -247,6 +256,13 @@ const addOrderFormHTML = `
         
         <label for="order_price">Price:</label>
         <input type="number" id = "order_price" name="order_price" required>
+
+        <label for="order_status">Order_Status</label>
+                <select id = "order_status" name = "order_status" required>
+                    <option value = "Hold" }>Hold</option>
+                    <option value = "Processing" }>Processing</option>
+                    <option value = "shipped" }>Shipped</option>
+                    <option value = "Delivered" }>Delivered</option>
 
     </form>
 `;
