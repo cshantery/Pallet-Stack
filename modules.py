@@ -159,7 +159,7 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
                 Pallet_ID,
                 Customer_ID,
                 DATE_FORMAT(Order_Date, '%Y-%m-%d') AS Order_Date,
-                Quantity
+                Quantity,
                 Order_Price
             FROM orders
             WHERE 1=1
