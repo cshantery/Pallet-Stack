@@ -67,7 +67,7 @@ def create_tables(connection):
         cursor = connection.cursor()
 
         tables = [
-
+            # 1. Pallets Table (No Foreign Keys)
             """
             CREATE TABLE IF NOT EXISTS pallets (
                 Pallet_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -77,6 +77,7 @@ def create_tables(connection):
                 Price DOUBLE
             )
             """,
+            # 2. Customer Table (No Foreign Keys)
             """
             CREATE TABLE IF NOT EXISTS customer (
                 Customer_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -85,7 +86,7 @@ def create_tables(connection):
                 Address VARCHAR(25)
             )
             """,
-    
+            # 3. Orders Table (Links to Pallets and Customer)
             """
             CREATE TABLE IF NOT EXISTS orders (
                 Order_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -93,9 +94,12 @@ def create_tables(connection):
                 Customer_ID INT,
                 Order_Date Date,
                 Quantity INT,
-                Order_Price DOUBLE
+                Order_Price DOUBLE,
+                FOREIGN KEY (Pallet_ID) REFERENCES pallets(Pallet_ID),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID)
             )
             """,
+            # 4. Shipments Table
             """
             CREATE TABLE IF NOT EXISTS shipments (
                 Shipment_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -104,12 +108,15 @@ def create_tables(connection):
                 Shipment_Status VARCHAR(25)
             )
             """,
+            # 5. Invoice Table (Links to Customer and Orders)
             """
             CREATE TABLE IF NOT EXISTS invoice (
                 Invoice_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
                 Customer_ID INT,
                 Order_ID INT,
-                Invoice_Status CHAR(25)
+                Invoice_Status CHAR(25),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID),
+                FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)
             )
             """
         ]
@@ -120,4 +127,4 @@ def create_tables(connection):
         print(" Tables created successfully!")
     except Error as e:
         print(" Table creation failed:", e)
-
+        
