@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             orders.forEach(o => {
                 const option = document.createElement('option');
                 option.value = o.Order_ID;
-                option.textContent = `Order #${o.Order_ID} — Customer ${o.Customer_ID}`;
+                option.textContent = `Order ID: ${o.Order_ID} — Name: ${o.Customer_Name}`;
 
                 select.appendChild(option);
             });
@@ -180,7 +180,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
             document.getElementById('customer_id').value = order.Customer_ID;
 
-            // You MUST modify backend to return Customer_Name
             document.getElementById('customer_name').value = order.Customer_Name ?? '';
 
         } catch(err){
