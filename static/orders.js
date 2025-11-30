@@ -244,10 +244,10 @@ const addOrderFormHTML = `
     <form id="modal-form" class="modal-form">
 
         <label for="pallet_id">Pallet ID:</label>
-        <input type="number" id = "pallet_id" name="pallet_id" required>
+        <input type="text" id = "pallet_id" name="pallet_id" required>
 
         <label for="customer_id">Customer ID:</label>
-        <input type="number" id = "customer_id" name="customer_id" required>
+        <input type="text" id = "customer_id" name="customer_id" required>
 
         <label for="order_date">Date:</label>
         <input type="date" id = "order_date" name="order_date" required>

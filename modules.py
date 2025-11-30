@@ -3,6 +3,18 @@
 
 from db import get_db
 
+# modules.py
+import uuid
+
+def generate_unique_id(prefix="PAL", length=4):
+    """
+    Generate a unique string ID with a prefix. 
+    Args:
+        prefix (str): String to prepend to the ID. Default is 'PAL'.
+        length (int): Number of characters from UUID to use. Default is 8.
+    """
+    unique_part = uuid.uuid4().hex[:length].upper()
+    return f"{prefix}{unique_part}"
 
 
 
@@ -10,10 +22,11 @@ from db import get_db
 def insert_invoice(customer_id, order_id, invoice_status):
     connection = get_db()
     cursor = connection.cursor()
-   
+    
     try:
-        query =  """ INSERT INTO invoice (Customer_ID, Order_ID,  Invoice_Status) VALUES(%s,%s,%s) """
-        cursor.execute(query, ( customer_id, order_id, invoice_status))
+        invoice_id = generate_unique_id("INV")
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID,  Invoice_Status) VALUES(%s,%s,%s,%s) """
+        cursor.execute(query, (invoice_id, customer_id, order_id, invoice_status))
         connection.commit()
         return True
     except Exception as e:
@@ -155,10 +168,10 @@ def insert_order(pallet_id, customer_id, date, quantity, price, order_status):
     cursor = connection.cursor()
 
     try:
-        # 2. If deduction succeeded, create the order
-        query = """INSERT INTO orders (Pallet_ID,  Customer_ID, Order_Date, Quantity, Order_Price, Order_Status) 
-        VALUES (%s,%s,%s,%s,%s,%s)"""
-        cursor.execute(query, (pallet_id, customer_id, date, quantity, price, order_status))
+        order_id = generate_unique_id("ORD")
+        query = """INSERT INTO orders (Order_ID, Pallet_ID,  Customer_ID, Order_Date, Quantity, Order_Price, Order_Status) 
+        VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+        cursor.execute(query, (order_id, pallet_id, customer_id, date, quantity, price, order_status))
         connection.commit()
         return True
     except Exception as e:
@@ -309,10 +322,12 @@ def delete_order(order_id):
 def insert_inventory(pallet_condition, size, inventory_count, price):
     connection = get_db()
     cursor = connection.cursor()
+    
    
     try:
-        query =  """ INSERT INTO pallets (Pallet_Condition, Size, Inventory_Count, Price) VALUES(%s,%s,%s,%s) """
-        cursor.execute(query, (pallet_condition, size, inventory_count, price))
+        pallet_id = generate_unique_id("PAL")
+        query =  """ INSERT INTO pallets (Pallet_ID, Pallet_Condition, Size, Inventory_Count, Price) VALUES(%s,%s,%s,%s,%s) """
+        cursor.execute(query, (pallet_id, pallet_condition, size, inventory_count, price))
         connection.commit()
         return True
     except Exception as e:
@@ -422,11 +437,12 @@ def delete_inventory(pallet_id):
 
 
 
-def insert_customer(customer_id, customer_name, phone, address):
+def insert_customer(customer_name, phone, address):
     connection = get_db()
     cursor = connection.cursor()
-   
+    
     try:
+        customer_id = generate_unique_id("CUST")
         query =  """ INSERT INTO customer (Customer_ID, Customer_Name, Phone, Address) VALUES(%s,%s,%s,%s) """
         cursor.execute(query, (customer_id, customer_name, phone, address))
         connection.commit()

@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
          `
         <form id="modal-form" class="modal-form">
                 <label for="customer_id">Customer ID</label>
-                <input type="number" id="customer_id" name="customer_id" step="1" readonly required>
+                <input type="text" id="customer_id" name="customer_id" step="1" readonly required>
 
                 <label for="customer_name">Customer Name</label>
                 <input type="text" id="customer_name" name="customer_name" step="1" readonly required>

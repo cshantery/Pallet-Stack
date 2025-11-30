@@ -70,7 +70,7 @@ def create_tables(connection):
 
             """
             CREATE TABLE IF NOT EXISTS pallets (
-                Pallet_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Pallet_ID VARCHAR(25) NOT NULL PRIMARY KEY,
                 Pallet_Condition VARCHAR(25),
                 Size VARCHAR(25),
                 Inventory_Count INT,
@@ -79,7 +79,7 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS customer (
-                Customer_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Customer_ID VARCHAR(25) NOT NULL PRIMARY KEY,
                 Customer_Name VARCHAR(25),
                 Phone VARCHAR(25),
                 Address VARCHAR(25)
@@ -88,9 +88,9 @@ def create_tables(connection):
     
             """
             CREATE TABLE IF NOT EXISTS orders (
-                Order_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Pallet_ID INT,
-                Customer_ID INT,
+                Order_ID VARCHAR(25) NOT NULL PRIMARY KEY,
+                Pallet_ID VARCHAR(25),
+                Customer_ID VARCHAR(25),
                 Order_Date Date,
                 Quantity INT,
                 Order_Price DOUBLE,
@@ -102,18 +102,18 @@ def create_tables(connection):
             """,
             """
             CREATE TABLE IF NOT EXISTS shipments (
-                Shipment_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Order_ID INT,
+                Shipment_ID VARCHAR(25) NOT NULL PRIMARY KEY,
+                Order_ID VARCHAR(25),
                 Shipment_Date DATE,
                 Shipment_Status VARCHAR(25)
             )
             """,
             """
             CREATE TABLE IF NOT EXISTS invoice (
-                Invoice_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-                Customer_ID INT,
+                Invoice_ID VARCHAR(25) NOT NULL PRIMARY KEY, 
+                Customer_ID VARCHAR(25),
                 Customer_Name VARCHAR(25),
-                Order_ID INT,
+                Order_ID VARCHAR(25),
                 Invoice_Status CHAR(25),
                 FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID),
                 FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)

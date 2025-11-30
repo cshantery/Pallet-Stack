@@ -4,7 +4,6 @@ import modules as db
 import setup_db as setup
 
 
-
 app = Flask(__name__)
 
 CORS(app)
@@ -260,12 +259,11 @@ def get_customer():
 @app.route('/api/customers', methods=['POST'])
 def create_customers():
     data = request.get_json()
-    customer_id = data.get('customer_id')
     customer_name = data.get('customer_name')
     phone = data.get('phone')
     address = data.get('address')
 
-    complete = db.insert_customer(customer_id, customer_name, phone, address)
+    complete = db.insert_customer(customer_name, phone, address)
     if complete:
         return jsonify({"message" : "Customer successfully created"}), 201
     else:
