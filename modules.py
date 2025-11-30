@@ -116,7 +116,32 @@ def delete_invoice(invoice_id):
     finally:
         cursor.close()
 
+def auto_fill_invoice(order_id):
+    connection = get_db()
+    cursor = connection.cursor()
 
+    try:
+        query = """SELECT 
+                    orders.Order_ID,
+                    orders.Customer_ID,
+                    orders.Customer_Name
+                FROM orders
+                Join customers ON orders.Customer_ID = customer.Customer_ID
+                WHERE orders.Order_ID = %s; 
+                    
+                """
+        cursor.execute(query, (order_id,))
+        connection.commit()
+
+        return row;
+
+    except Exception as e:
+        print(" Error auto filling invoice {invoice_id}:", e)
+        return False
+    finally:
+        cursor.close()
+    
+                
 #create order
 # Replaced the existing insert_order function
 
@@ -154,27 +179,29 @@ def view_orders(order_id = None, pallet_id = None, customer_id = None):
 
     try:
         query =  """
-            SELECT 
-                Order_ID,
-                Pallet_ID,
-                Customer_ID,
-                DATE_FORMAT(Order_Date, '%Y-%m-%d') AS Order_Date,
-                Quantity,
-                Order_Price,
-                Order_Status
-            FROM orders
-            WHERE 1=1
-        """
+        SELECT 
+            o.Order_ID AS Order_ID,
+            o.Pallet_ID AS Pallet_ID,
+            o.Customer_ID AS Customer_ID,
+            DATE_FORMAT(o.Order_Date, '%Y-%m-%d') AS Order_Date,
+            o.Quantity AS Quantity,
+            o.Order_Price AS Order_Price,
+            o.Order_Status AS Order_Status,
+            c.Customer_Name AS Customer_Name
+        FROM orders o
+        JOIN customer c ON o.Customer_ID = c.Customer_ID
+        WHERE 1=1
+    """
         values =[]
 
         if order_id != None:
-            query += " AND Order_ID = %s"
+            query += " AND o.Order_ID = %s"
             values.append(order_id)
         if pallet_id != None:
-            query += " AND Pallet_ID = %s"
+            query += " AND o.Pallet_ID = %s"
             values.append(pallet_id)
         if customer_id != None:
-            query += " AND Customer_ID = %s"
+            query += " AND o.Customer_ID = %s"
             values.append(customer_id)
 
         cursor.execute(query, tuple(values))
@@ -386,6 +413,123 @@ def delete_inventory(pallet_id):
         return False
     finally: 
         cursor.close()
+
+
+
+
+
+
+
+
+
+def insert_customer(customer_id, customer_name, phone, address):
+    connection = get_db()
+    cursor = connection.cursor()
+   
+    try:
+        query =  """ INSERT INTO customer (Customer_ID, Customer_Name, Phone, Address) VALUES(%s,%s,%s,%s) """
+        cursor.execute(query, (customer_id, customer_name, phone, address))
+        connection.commit()
+        return True
+    except Exception as e:
+        print("Error creating customer:", e)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+
+
+#read inventory 
+def get_customers(search_term=None):
+    connection = get_db()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        values = []
+        query = "SELECT * FROM customer"
+
+        # If a search term is provided, filter by condition OR size
+        if search_term:
+            query += " WHERE Customer_ID LIKE %s OR Customer_Name LIKE %s"
+            # Add wildcards for partial matching
+            search_like = f"%{search_term}%"
+            values.extend([search_like, search_like])
+
+        query += " ORDER BY Customer_ID"
+        
+        cursor.execute(query, tuple(values))
+        results = cursor.fetchall()
+        return results
+        
+    except Exception as e:
+        print("Error fetching customer", e)
+        connection.rollback()
+        return []  # Return empty list on error
+    finally:
+        cursor.close()
+
+#update operation for inventory table
+def update_customer(customer_id, customer_name = None, phone = None, address = None):
+    connection = get_db()
+    cursor = connection.cursor()
+      
+    try: 
+        updates = []
+        values = []
+
+        if customer_id != None: 
+            updates.append("Customer_ID = %s")
+            values.append(customer_id)
+        
+        if customer_name!= None:
+            updates.append("Customer_Name = %s")
+            values.append(customer_name)
+        
+        if phone != None:
+            updates.append("Phone = %s")
+            values.append(phone)
+
+        if adress != None:
+            updates.append("Address = %s")
+            values.append(adress)
+
+        if not updates:
+            print("No updates.")
+            return False
+
+        values.append(customer_id)
+        query = f"""UPDATE customer SET {', '.join(updates)} WHERE Customer_ID = %s"""
+        cursor.execute(query, tuple(values))
+        connection.commit()
+
+        return cursor.rowcount > 0
+
+    except Exception as e:
+        print("Error updtating customer:", e)
+        connection.rollback()
+        return False
+    finally: 
+        cursor.close()
+
+
+def delete_customer(customer_id):
+    connection = get_db()
+    cursor = connection.cursor()
+
+    try:
+        query = "DELETE FROM customer WHERE Customer_ID = %s"
+        cursor.execute(query, (customer_id,))
+        connection.commit()
+
+        return cursor.rowcount > 0
+    
+    except Exception as e:
+        print(f" Error deleting customer {customer_id}:", e)
+        connection.rollback()
+        return False
+    finally: 
+        cursor.close()
+
 
 
 # Helper Function that updates pallet count

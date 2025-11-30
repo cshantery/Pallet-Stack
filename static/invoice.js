@@ -10,9 +10,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const modalBody = document.getElementById('modalBody');
     let modalConfirmBtn = document.getElementById('modalConfirmBtn');
     let modalCancelBtn = document.getElementById('modalCancelBtn');
-    let modalCloseBtn = document.getElementById('modalCloseBtn');
-    const headerActions = document.getElementById('modalHeaderActions');
-    const delete_invoice_button = document.getElementById('deleteInvoiceButton');
+ 
 
 
     function openModal(title, content, confirmText, confirmAction){
@@ -96,7 +94,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     }
 
-     async function deleteInventoryItem(invoiceID) {
+    async function deleteInvoiceItem(invoiceID) {
         try {
             const response = await fetch(`/api/invoices/${invoiceID}`, {
                 method: 'DELETE',
@@ -127,10 +125,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
          `
         <form id="modal-form" class="modal-form">
                 <label for="customer_id">Customer ID</label>
-                <input type="number" id="customer_id" name="customer_id" step="1" required>
+                <input type="number" id="customer_id" name="customer_id" step="1" readonly required>
+
+                <label for="customer_name">Customer Name</label>
+                <input type="text" id="customer_name" name="customer_name" step="1" readonly required>
             
                 <label for="order_id">Order ID</label>
-                <input type="number" id="order_id" name="order_id" step="1" required>
+                <select id = "order_id" name = "order_id" required>
+                    <option value = ""> Select Order -- </option>
+                </select>
 
                 <label for="invoice_status">Invoice Status</label>
                 <select id = "invoice_status" name = "invoice_status" required>
@@ -139,12 +142,60 @@ document.addEventListener('DOMContentLoaded', ()=>{
         </form>
     `;
 
+    async function populateOrderDropdown(){
+        const select = document.getElementById('order_id');
+        select.innerHTML = `<option value="">-- Select Order --</option>`;
+
+        try {
+            const response = await fetch('/api/order');  
+            const orders = await response.json();
+
+            orders.forEach(o => {
+                const option = document.createElement('option');
+                option.value = o.Order_ID;
+                option.textContent = `Order #${o.Order_ID} — Customer ${o.Customer_ID}`;
+
+                select.appendChild(option);
+            });
+
+        } catch(err){
+            console.error("Error loading orders:", err);
+        }
+    }
+
+
+
+    async function onOrderSelect(event){
+        const order_id = event.target.value;
+
+        if (!order_id) {
+            document.getElementById('customer_id').value = '';
+            document.getElementById('customer_name').value = '';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/${order_id}`);  // FIXED ROUTE
+            const order = await response.json();
+
+            document.getElementById('customer_id').value = order.Customer_ID;
+
+            // You MUST modify backend to return Customer_Name
+            document.getElementById('customer_name').value = order.Customer_Name ?? '';
+
+        } catch(err){
+            console.error("Error fetching order details:", err);
+        }
+    }
+
+
 
     function createViewDetailsHTML(p){
         return `
             <div class = "item-details">
                 <p><strong>Invoice ID: </strong>${p.Invoice_ID}</p>
                 <p><strong>Customer ID: </strong>${p.Customer_ID}</p>
+                <p><strong>Customer Name: </strong>${p.Customer_Name}</p>
                 <p><strong>Order ID: </strong>${p.Order_ID}</p>
                 <p><strong>Status: </strong>${p.Invoice_Status}</p>
                     
@@ -157,21 +208,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
             if(addForm){
                 addForm.requestSubmit();
             }
-        };
+            };
 
-        openModal(
-            ' Add New Invoice Item',
-            addInvoiceFormHTML,
-            null,
-            addAction
+            openModal(
+                ' Add New Invoice Item',
+                addInvoiceFormHTML,
+                null,
+                addAction
         );
 
+        // Attach form submission
         const addForm = document.getElementById('modal-form');
         if (addForm) {
             addForm.addEventListener('submit', handleAddSubmit);
         }
 
+        // FIX: populate order dropdown THEN attach listener
+        populateOrderDropdown();
+
+        const orderSelect = document.getElementById('order_id');
+        orderSelect.addEventListener('change', onOrderSelect);
+
     });
+
 
     const handleAddSubmit =  async(event) => {
         event.preventDefault();
@@ -216,6 +275,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
                 <label for = "customer_id">Customer ID:</label>
                 <input type = "text" id = "customer_id" name = "customer_id" value = "${data.Customer_ID}"required>
+
+                <label for = "customer_name">Customer Name:</label>
+                <input type = "text" id = "customer_name" name = "customer_name" value = "${data.Customer_Name}"required>
 
                 <label for = "order_id">Order ID:</label>
                 <input type = "text" id = "order_id" name = "order_id" value = "${data.Order_ID}"required>

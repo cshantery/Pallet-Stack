@@ -94,7 +94,10 @@ def create_tables(connection):
                 Order_Date Date,
                 Quantity INT,
                 Order_Price DOUBLE,
-                Order_Status CHAR(25)
+                Order_Status CHAR(25),
+                FOREIGN KEY (Pallet_ID) REFERENCES pallets(Pallet_ID),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID)
+                
             )
             """,
             """
@@ -109,8 +112,11 @@ def create_tables(connection):
             CREATE TABLE IF NOT EXISTS invoice (
                 Invoice_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
                 Customer_ID INT,
+                Customer_Name VARCHAR(25),
                 Order_ID INT,
-                Invoice_Status CHAR(25)
+                Invoice_Status CHAR(25),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID),
+                FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)
             )
             """
         ]

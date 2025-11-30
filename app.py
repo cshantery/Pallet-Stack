@@ -27,6 +27,12 @@ def orders():
 def inventory():
     return render_template('inventory.html')
 
+@app.route('/customers')
+def customers():
+    return render_template('customers.html')
+
+
+
 
 
 
@@ -212,6 +218,92 @@ def delete_order(order_id):
         return jsonify({"message": f"order {order_id} deleted"}), 200
     else:
         return jsonify({"message" : "order not found or deletion failed"}), 400
+
+
+
+
+@app.route('/api/order/<order_id>', methods=['GET'])
+def get_order(order_id):
+    order = db.view_orders(order_id, None, None)
+    
+    if order and len(order) > 0:
+        return jsonify(order[0]), 200
+    else:
+        return jsonify({"error": "Order not found"}), 404
+
+
+
+
+@app.route('/api/customers', methods=['GET'])
+def search_customers():
+    customer_id = request.args.get('customer_id')
+
+   
+
+
+    results = db.get_customers(customer_id)
+    return jsonify(results), 200
+
+
+@app.route('/api/customers', methods=['GET'])
+def get_customer():
+  
+    try:
+        customer = db.get_customers()
+        return jsonify(customer)
+
+    except Exception as e:
+        print(f"Error in GET /api/customers: {e}")
+        return jsonify({"error": "Failed to fetch customer"}), 500
+
+
+@app.route('/api/customers', methods=['POST'])
+def create_customers():
+    data = request.get_json()
+    customer_id = data.get('customer_id')
+    customer_name = data.get('customer_name')
+    phone = data.get('phone')
+    address = data.get('address')
+
+    complete = db.insert_customer(customer_id, customer_name, phone, address)
+    if complete:
+        return jsonify({"message" : "Customer successfully created"}), 201
+    else:
+        return jsonify({"error" : "failed to create customer"}), 400
+
+
+
+
+@app.route('/api/customers/<customer_id>', methods=['PUT'])
+def update_customer(customer_id):
+    data = request.get_json()
+    customer_id = data.get('customer_id')
+    customer_name = data.get('customer_name')
+    phone = data.get('phone')
+    address = data.get('address')
+
+    complete = db.update_customer(customer_id, customer_name, phone, address)
+    if complete:
+        return jsonify({"message" : "customer update complete"}), 200
+    else:
+        return jsonify({"error" : "customer could not be updated"}), 400
+    
+
+
+
+@app.route('/api/customers/<customer_id>', methods=['DELETE'])
+def delete_customer(customer_id):
+    complete = db.delete_customer(customer_id)
+    if complete:
+        return jsonify({"message": f"customer {customer_id} deleted"}), 200
+    else:
+        return jsonify({"message" : "customer not found or deletion failed"}), 400
+
+
+
+
+
+
 
 if __name__ == '__main__':
 

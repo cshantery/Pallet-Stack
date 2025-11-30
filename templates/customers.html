@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventory Dashboard{% endblock %}
+
+{% block content %}
+<div class="inventory-dashboard">
+  
+    <aside class="sidebar">
+        <h2>Actions</h2>
+        <input type="text" id="customerSearchInput" class="search-box" placeholder="Search Condition or Size..." >
+        <button id="searchCustomerButton" class="sidebar-btn">Search Customer</button>
+        <hr class="sidebar-hr">
+        <button id="addCustomerButton" class="sidebar-btn">Add Customer</button>
+        
+    </aside>
+
+  
+    <section class="main-content">
+        <h2>Current Inventory</h2>
+
+        <table id="customersTable">
+            <thead>
+                <tr>
+                    <th>Customer_ID</th>
+                    <th>Customer Name</th>
+                    <th>Phone</th>
+                    <th>Adress</th>
+                </tr>
+            </thead>
+            <tbody id = "customersTableBody">
+
+
+            </tbody>
+        </table>
+
+    </section> 
+
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='customers.js') }}"></script>
+{% endblock %}
