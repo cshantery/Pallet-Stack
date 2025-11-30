@@ -46,6 +46,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
     };
 
+    async function deleteCustomer(customerID) {
+        try {
+            const response = await fetch(`/api/customers/${customerID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchCustomer();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
     
     async function fetchCustomer(params = null) {
         try{
@@ -75,10 +96,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     openModal(' Customer Details', content, "Edit", () => {
                         openEditCustomerModal(data);});
                         
-                    const deleteCustomerBtn = document.getElementById('deleteCustomerBtn');
+                    const deleteCustomerBtn = document.getElementById('deleteItemBtn');
                     if (deleteCustomerBtn) {
-                        deleteItemBtn.addEventListener('click', () => {
-                            deleteInventoryItem(data.Customer_ID);
+                        deleteCustomerBtn.addEventListener('click', () => {
+                            deleteCustomer(data.Customer_ID);
       });
     }
                
@@ -92,28 +113,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
             console.error('Error fetching data: ', error)
         }
     }
-
-    async function deleteCustomer(customerID) {
-        try {
-            const response = await fetch(`/api/customers/${customerID}`, {
-                method: 'DELETE',
-                headers: { 'content-type': 'application/json' }
-            });
-            const result = await response.json();
-            if (response.ok) {
-                console.log("Delete success", result.message);
-                closeModal();
-                fetchCustomer();
-            } 
-            else {
-                console.error("Error from server", result.message);
-                alert(`Error: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error deleting", error);
-            alert("Error");
-  }
-}
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
             closeModal();
