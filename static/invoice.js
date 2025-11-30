@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
 
         try {
-            const response = await fetch(`/api/order/${order_id}`);  // FIXED ROUTE
+            const response = await fetch(`/api/order/${order_id}`);  
             const order = await response.json();
 
             document.getElementById('customer_id').value = order.Customer_ID;
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             addForm.addEventListener('submit', handleAddSubmit);
         }
 
-        // FIX: populate order dropdown THEN attach listener
+        
         populateOrderDropdown();
 
         const orderSelect = document.getElementById('order_id');

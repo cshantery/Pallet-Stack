@@ -243,11 +243,15 @@ const createOrderBtn = document.getElementById('createOrderButton');
 const addOrderFormHTML = `
     <form id="modal-form" class="modal-form">
 
-        <label for="pallet_id">Pallet ID:</label>
-        <input type="text" id = "pallet_id" name="pallet_id" required>
+        <label for="pallet_id">Pallet ID</label>
+        <select id = "pallet_id" name = "pallet_id" required>
+            <option value = ""> Select Pallet -- </option>
+        </select>
 
-        <label for="customer_id">Customer ID:</label>
-        <input type="text" id = "customer_id" name="customer_id" required>
+        <label for="customer_id">Customer ID</label>
+        <select id = "customer_id" name = "customer_id" required>
+            <option value = ""> Select Customer -- </option>
+        </select>
 
         <label for="order_date">Date:</label>
         <input type="date" id = "order_date" name="order_date" required>
@@ -267,6 +271,51 @@ const addOrderFormHTML = `
 
     </form>
 `;
+
+
+    async function populatePalletDropdown(){
+        const select = document.getElementById('pallet_id');
+        select.innerHTML = `<option value="">-- Select Pallet --</option>`;
+
+        try {
+            const response = await fetch('/api/inventory');  
+            const orders = await response.json();
+
+            orders.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.Pallet_ID;
+                option.textContent = `Pallet ID: ${p.Pallet_ID} - Size: ${p.Size} - Condition: ${p.Pallet_Condition}`;
+
+                select.appendChild(option);
+            });
+
+        } catch(err){
+            console.error("Error loading pallets:", err);
+        }
+    }
+
+
+        async function populateCustomerDropdown(){
+        const select = document.getElementById('customer_id');
+        select.innerHTML = `<option value="">-- Select Customer --</option>`;
+
+        try {
+            const response = await fetch('/api/customers');  
+            const orders = await response.json();
+
+            orders.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.Customer_ID;
+                option.textContent = `Customer ID: ${c.Customer_ID} - Customer_Name: ${c.Customer_Name}`;
+
+                select.appendChild(option);
+            });
+
+        } catch(err){
+            console.error("Error loading customers:", err);
+        }
+    }
+
 
 const handleAddSubmit =  async (event) => {
         event.preventDefault();
@@ -314,7 +363,8 @@ createOrderBtn.addEventListener('click', () => {
     };
 
     openModal('Create New Order', addOrderFormHTML, 'Create Order', submitAction);
-
+    populatePalletDropdown();
+    populateCustomerDropdown();
     // After opening the modal, we add the submit listener to the new form
     const addForm = document.getElementById('modal-form');
     if (addForm) {
