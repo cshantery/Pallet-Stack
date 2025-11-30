@@ -156,10 +156,11 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 <label for="order_status">Order_Status</label>
                 <select id = "order_status" name = "order_status" required>
-                    <option value = "Hold" }>Hold</option>
-                    <option value = "Processing" }Processing</option>
-                    <option value = "shipped" }>Shipped</option>
-                    <option value = "Delivered" }>Delivered</option>
+                <option value="Hold">Hold</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+
             </form>
         `;
 
@@ -254,8 +255,8 @@ const addOrderFormHTML = `
         <label for="quantity">Quantity:</label>
         <input type="number"    id = "quantity" name="quantity" required>
         
-        <label for="order_price">Price:</label>
-        <input type="number" id = "order_price" name="order_price" required>
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*">
 
         <label for="order_status">Order_Status</label>
                 <select id = "order_status" name = "order_status" required>

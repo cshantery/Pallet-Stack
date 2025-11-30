@@ -162,7 +162,7 @@ def create_order():
     order_date = data.get('order_date')
     quantity = data.get('quantity')
     order_price = data.get('price')
-    order_status = data.get('status')
+    order_status = data.get('order_status')
 
     complete = db.insert_order(pallet_id, customer_id, order_date, quantity, order_price, order_status)
     if complete:
@@ -194,7 +194,7 @@ def update_order(order_id):
     order_date = data.get('order_date')
     quantity = data.get('quantity')
     order_price = data.get('price')
-    order_status = data.get('status')
+    order_status = data.get('order_status')
 
     complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity, order_price, order_status)
     if complete:

@@ -93,7 +93,7 @@ def create_tables(connection):
                 Customer_ID INT,
                 Order_Date Date,
                 Quantity INT,
-                Order_Price DOUBLE
+                Order_Price DOUBLE,
                 Order_Status CHAR(25)
             )
             """,
