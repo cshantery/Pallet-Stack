@@ -62,6 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Edit',
                         () => openEditModal(item)
                     );
+                     const deleteItemBtn = document.getElementById('deleteItemBtn');
+                    if (deleteItemBtn) {
+                        deleteItemBtn.addEventListener('click', () => {
+                            deleteInventoryItem(item.Pallet_ID);
+      });
+    }
                 });
                 pallet_table.appendChild(row);
             });
@@ -69,6 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
         }
     }
+
+    async function deleteInventoryItem(palletID) {
+        try {
+            const response = await fetch(`/api/inventory/${palletID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchInventory();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
+
 
     // bind search button and auto-clear behavior
     if (search_inventory_button) {
