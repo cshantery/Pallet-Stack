@@ -76,10 +76,11 @@ def create_invoices():
 def update_invoices(invoice_id):
     data = request.get_json()
     customer_id = data.get('customer_id')
+    customer_name = data.get('customer_name')
     order_id = data.get('order_id')
     invoice_status = data.get('invoice_status')
 
-    complete = db.update_invoice(invoice_id, customer_id, order_id, invoice_status)
+    complete = db.update_invoice(invoice_id, customer_id, customer_name, order_id, invoice_status)
     if complete:
         return jsonify({"message" : "invoice update complete"}), 200
     else:
@@ -198,7 +199,7 @@ def update_order(order_id):
     customer_id = data.get('customer_id')
     order_date = data.get('order_date')
     quantity = data.get('quantity')
-    order_price = data.get('price')
+    order_price = data.get('order_price')
     order_status = data.get('order_status')
 
     complete = db.update_order(order_id, pallet_id, customer_id, order_date, quantity, order_price, order_status)
@@ -237,8 +238,6 @@ def get_order(order_id):
 def search_customers():
     customer_id = request.args.get('customer_id')
 
-   
-
 
     results = db.get_customers(customer_id)
     return jsonify(results), 200
@@ -275,7 +274,6 @@ def create_customers():
 @app.route('/api/customers/<customer_id>', methods=['PUT'])
 def update_customer(customer_id):
     data = request.get_json()
-    customer_id = data.get('customer_id')
     customer_name = data.get('customer_name')
     phone = data.get('phone')
     address = data.get('address')
@@ -296,9 +294,6 @@ def delete_customer(customer_id):
         return jsonify({"message": f"customer {customer_id} deleted"}), 200
     else:
         return jsonify({"message" : "customer not found or deletion failed"}), 400
-
-
-
 
 
 

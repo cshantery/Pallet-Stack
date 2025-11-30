@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 row.innerHTML = `
                     <td>${data.Invoice_ID}</td>
                     <td>${data.Customer_ID}</td>
+                    <td>${data.Customer_Name}</td>
                     <td>${data.Order_ID}</td>
                     <td>${data.Invoice_Status}</td>
                 `;

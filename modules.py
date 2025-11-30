@@ -19,14 +19,14 @@ def generate_unique_id(prefix="PAL", length=4):
 
 
 #create invoice
-def insert_invoice(customer_id, order_id, invoice_status):
+def insert_invoice(customer_id, customer_name, order_id, invoice_status):
     connection = get_db()
     cursor = connection.cursor()
     
     try:
         invoice_id = generate_unique_id("INV")
-        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Order_ID,  Invoice_Status) VALUES(%s,%s,%s,%s) """
-        cursor.execute(query, (invoice_id, customer_id, order_id, invoice_status))
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Customer_Name, Order_ID,  Invoice_Status) VALUES(%s,%s,%s,%s) """
+        cursor.execute(query, (invoice_id, customer_id, customer_name, order_id, invoice_status))
         connection.commit()
         return True
     except Exception as e:
@@ -37,7 +37,7 @@ def insert_invoice(customer_id, order_id, invoice_status):
         cursor.close()
 
 #read operation for invoice, search by customer id invoice id or order id
-def search_invoice(invoice_id = None, order_id = None, customer_id = None):
+def search_invoice(invoice_id = None, order_id = None, customer_id = None, customer_name = None):
     connection = get_db()
     cursor = connection.cursor(dictionary=True)
 
@@ -57,6 +57,10 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
             query += " AND Customer_ID = %s"
             values.append(customer_id)
 
+        if customer_name != None:
+            query += " AND Customer_Name = %s"
+            values.append(customer_name)
+
         cursor.execute(query, tuple(values))
         results = cursor.fetchall()
         return results
@@ -69,7 +73,7 @@ def search_invoice(invoice_id = None, order_id = None, customer_id = None):
 
     
 #update operation for invoice table
-def update_invoice(invoice_id, customer_id = None, order_id = None, invoice_status = None):
+def update_invoice(invoice_id, customer_id = None, customer_name = None, order_id = None, invoice_status = None):
     connection = get_db()
     cursor = connection.cursor()
 
@@ -80,6 +84,10 @@ def update_invoice(invoice_id, customer_id = None, order_id = None, invoice_stat
         if customer_id != None:
             updates.append("Customer_ID = %s")
             values.append(customer_id)
+        
+        if customer_id != None:
+            updates.append("Customer_Name = %s")
+            values.append(customer_name)
 
         if order_id != None:
             updates.append("Order_ID = %s")
@@ -505,9 +513,9 @@ def update_customer(customer_id, customer_name = None, phone = None, address = N
             updates.append("Phone = %s")
             values.append(phone)
 
-        if adress != None:
+        if address != None:
             updates.append("Address = %s")
-            values.append(adress)
+            values.append(address)
 
         if not updates:
             print("No updates.")

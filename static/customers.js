@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
                 <input type = "text" id = "phone" name = "phone" value = "${data.Phone}"required>
                 
                 <label for = "address">Adress:</label>
-                <input type = "text" id = "adress" name = "adress" value = "${data.Address}"required>
+                <input type = "text" id = "address" name = "address" value = "${data.Address}"required>
 
             </form>
         `;
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
                 
                 closeModal();
-                fetchInvoice();
+                fetchCustomer();
             //editForm.reset();
             } else {
                 console.error('error from server', result.error);
