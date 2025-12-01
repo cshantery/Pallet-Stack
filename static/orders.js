@@ -39,7 +39,27 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
         modal.classList.add('active');
     }
-
+        async function deleteOrders(orderID) {
+        try {
+            const response = await fetch(`/api/order/${orderID}`, {
+                method: 'DELETE',
+                headers: { 'content-type': 'application/json' }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Delete success", result.message);
+                closeModal();
+                fetchOrder();
+            } 
+            else {
+                console.error("Error from server", result.message);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error deleting", error);
+            alert("Error");
+  }
+}
 
 
     async function fetchOrder(){
@@ -66,10 +86,10 @@ document.addEventListener('DOMContentLoaded', ()=> {
                     const content = createViewDetailsHTML(data);
                     openModal('Order Details', content, 'Edit', () => openEditModal(data));
 
-                    const deleteItemBtn = document.getElementById('deleteItemBtn');
-                    if (deleteItemBtn) {
-                        deleteItemBtn.addEventListener('click', () => {
-                            deleteInventoryItem(data.Order_ID);
+                    const deleteOrderBtn = document.getElementById('deleteItemBtn');
+                    if (deleteOrderBtn) {
+                        deleteOrderBtn.addEventListener('click', () => {
+                            deleteOrders(data.Order_ID);
       });
     }
 
@@ -84,29 +104,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
             console.error('Error fetching data: ', error)
         }
     }
-
-    async function deleteInventoryItem(orderID) {
-        try {
-            const response = await fetch(`/api/order/${orderID}`, {
-                method: 'DELETE',
-                headers: { 'content-type': 'application/json' }
-            });
-            const result = await response.json();
-            if (response.ok) {
-                console.log("Delete success", result.message);
-                closeModal();
-                fetchOrder();
-            } 
-            else {
-                console.error("Error from server", result.message);
-                alert(`Error: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error deleting", error);
-            alert("Error");
-  }
-}
-
 
     window.addEventListener('click', (event)=> {
         if(event.target == modal){
@@ -156,10 +153,10 @@ document.addEventListener('DOMContentLoaded', ()=> {
 
                 <label for="order_status">Order_Status</label>
                 <select id = "order_status" name = "order_status" required>
-                <option value="Hold">Hold</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
+                <option value = "hold" ${data.Order_Status === 'hold' ? 'selected' : ''}>Hold</option>
+                <option value = "processing" ${data.Invoice_Status === 'processing' ? 'selected' : ''}>Processing</option>
+                <option value = "shipped" ${data.Invoice_Status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                <option value = "Delivered" ${data.Invoice_Status === 'delivered' ? 'selected' : ''}>Delivered</option>
 
             </form>
         `;
