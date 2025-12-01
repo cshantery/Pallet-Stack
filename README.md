@@ -20,6 +20,12 @@ Users are able to manage inventory, orders, and invoices.
         Search
         Delete
         Update
+    Customers- 
+        Add
+        Search
+        Delete
+        Update
+
 
     In the future we would like to include shipment tracking, ability to export invoices, and more detailed inventory management
 
@@ -30,7 +36,7 @@ Users are able to manage inventory, orders, and invoices.
     DataBase - MySQL server
     Python-DB-Connector - mysql-connector-python
 
-## Dependacnies
+## Dependancies
     To run this application you must have:
         - MySQL server 
         - Python3
