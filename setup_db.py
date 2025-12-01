@@ -115,7 +115,7 @@ def create_tables(connection):
                 Customer_Name VARCHAR(25),
                 Order_ID VARCHAR(25),
                 Invoice_Status CHAR(25),
-                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID),
+                FOREIGN KEY (Customer_ID) REFERENCES customer(Customer_ID) ON DELETE RESTRICT,
                 FOREIGN KEY (Order_ID) REFERENCES orders(Order_ID)
             )
             """

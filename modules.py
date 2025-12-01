@@ -25,7 +25,7 @@ def insert_invoice(customer_id, customer_name, order_id, invoice_status):
     
     try:
         invoice_id = generate_unique_id("INV")
-        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Customer_Name, Order_ID,  Invoice_Status) VALUES(%s,%s,%s,%s) """
+        query =  """ INSERT INTO invoice (Invoice_ID, Customer_ID, Customer_Name, Order_ID,  Invoice_Status) VALUES(%s,%s,%s,%s, %s) """
         cursor.execute(query, (invoice_id, customer_id, customer_name, order_id, invoice_status))
         connection.commit()
         return True

@@ -60,10 +60,11 @@ def get_invoice():
 def create_invoices():
     data = request.get_json()
     customer_id = data.get('customer_id')
+    customer_name = data.get('customer_name')
     order_id = data.get('order_id')
     invoice_status = data.get('invoice_status')
 
-    complete = db.insert_invoice(customer_id, order_id, invoice_status)
+    complete = db.insert_invoice(customer_id, customer_name, order_id, invoice_status)
     if complete:
         return jsonify({"message" : "Invoice successfully created"}), 201
     else:

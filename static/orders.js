@@ -281,7 +281,7 @@ const addOrderFormHTML = `
             orders.forEach(p => {
                 const option = document.createElement('option');
                 option.value = p.Pallet_ID;
-                option.textContent = `Pallet ID: ${p.Pallet_ID} - Size: ${p.Size} - Condition: ${p.Pallet_Condition}`;
+                option.textContent = `Pallet ID: ${p.Pallet_ID} - Size: ${p.Size} - Condition: ${p.Pallet_Condition} - Price: ${p.Price}`;
 
                 select.appendChild(option);
             });
